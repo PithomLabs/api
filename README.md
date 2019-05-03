@@ -1,2 +1,3 @@
-# api
-Komfy API built with Go, Echo, PostgreSQL and GORM
+# komfy/api
+
+Komfy GraphQL API built with Go, GraphQL, PostgreSQL and GORM
