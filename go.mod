@@ -8,7 +8,7 @@ require (
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/google/pprof v0.0.0-20190502144155-8358a9778bd1 // indirect
-	github.com/graphql-go/graphql v0.7.8 // indirect
+	github.com/graphql-go/graphql v0.7.8
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/jinzhu/gorm v1.9.5 // indirect
 	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734 // indirect
