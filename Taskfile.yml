@@ -1,0 +1,10 @@
+version: '2'
+
+tasks:
+  build:
+    cmds:
+      - go build -v -o build/main src/main.go
+  run:
+    deps: [build]
+    cmds:
+      - build/main
