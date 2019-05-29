@@ -1,27 +1,16 @@
-package main
+package handler
 
 import (
     // Go's packages
     "fmt"
     "net/http"
-    "log"
     "encoding/json"
 
     // Community's packages 
     "github.com/graphql-go/graphql"
 )
 
-func main() {
-
-    http.HandleFunc("/", HomePageHandler)
-
-    err := http.ListenAndServe(":8080", nil)
-    if err != nil {
-        log.Fatal("ListenAndServe: ", err)
-    }
-}
-
-func HomePageHandler(writer http.ResponseWriter, request *http.Request) {
+func Handler(writer http.ResponseWriter, request *http.Request) {
     // Creating a Schema
     graphqlFields := graphql.Fields{
         "hello": &graphql.Field{

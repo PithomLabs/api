@@ -1,0 +1,6 @@
+bin
+build
+tmp
+air.conf
+Taskfile.yml
+README.md

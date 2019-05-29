@@ -1,0 +1,16 @@
+{
+	"version": 2,
+	"name": "api",
+	"scope": "komfy",
+	"builds": [
+			{
+				"src": "index.go",
+				"use": "@now/go"
+			}
+	],
+	"build": {
+    "env": {
+      "GO111MODULE": "on"
+    }
+  }
+}
