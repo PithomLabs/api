@@ -12,11 +12,5 @@
     "env": {
       "GO111MODULE": "on"
     }
-	},
-	"routes": [
-		{
-			"src": "/*",
-			"dest": "/*.go"
-		}
-	]
+	}
 }
