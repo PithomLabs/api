@@ -4,7 +4,7 @@
 	"scope": "komfy",
 	"builds": [
 			{
-				"src": "index.go",
+				"src": "*.go",
 				"use": "@now/go"
 			}
 	],
@@ -12,5 +12,11 @@
     "env": {
       "GO111MODULE": "on"
     }
-  }
+	},
+	"routes": [
+		{
+			"src": "/*",
+			"dest": "/*.go"
+		}
+	]
 }
