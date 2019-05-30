@@ -14,5 +14,4 @@
 # env files
 *.env
 
-build/
-tmp/**/*
+tmp/

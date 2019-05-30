@@ -1,10 +1,6 @@
 version: '2'
 
 tasks:
-  build:
+  dev:
     cmds:
-      - go build -v -o build/main src/main.go
-  run:
-    deps: [build]
-    cmds:
-      - build/main
+      - bin/air -c air.conf
