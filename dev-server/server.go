@@ -1,11 +1,11 @@
 package main
 
 import (
-	h "github.com/komfy/api"
+	"github.com/komfy/api/lambdas/rand"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", h.Handler)
+	http.HandleFunc("/rand", lambdas.rand.Handler)
 	http.ListenAndServe(":8080", nil)
 }

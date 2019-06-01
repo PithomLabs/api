@@ -7,10 +7,14 @@
 				"src": "*.go",
 				"use": "@now/go"
 			}
+	], "routes": [
+		{"src": "/", "dest": "/lambdas/index.go"},
+		{"src": "/rand", "dest": "/lambdas/rand.go"},
+		{"src": "/rand_dict", "dest": "/lambdas/rand_dict.go"}
 	],
 	"build": {
-    "env": {
-      "GO111MODULE": "on"
-    }
+		"env": {
+		  "GO111MODULE": "on"
+		}
 	}
 }
