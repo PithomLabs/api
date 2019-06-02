@@ -10,7 +10,7 @@
 	], "routes": [
 		{"src": "/", "dest": "/lambdas/index.go"},
 		{"src": "/rand", "dest": "/lambdas/rand/rand.go"},
-		{"src": "/randDict", "dest": "/lambdas/randDict/rand_dict.go"}
+		{"src": "/randDict", "dest": "/lambdas/randDict/randDict.go"}
 	],
 	"build": {
 		"env": {

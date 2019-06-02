@@ -3,17 +3,14 @@ package randDict
 import (
 	"fmt"
 	"net/http"
-	//"io/ioutil"
-	//"strings"
-	//"time"
-	//"math/rand"
+	"io/ioutil"
+	"strings"
+	"time"
+	"math/rand"
 )
 
-const (
-	maxPassLen = 20
-	
-)
-/*
+const maxPassLen int = 20
+
 // Create a slice with the words from the words' file
 func createWordsSlice() ([]string, int, error) {
 	// Read all the words inside the file "wordsGist"
@@ -25,13 +22,12 @@ func createWordsSlice() ([]string, int, error) {
 	words := strings.Split(string(file), "\n")
 	return words, len(words), nil
 }
-*/
+
 // The /rand_dict handler function
 func Handler(writer http.ResponseWriter, req *http.Request) {
 	// Change the rand seed every time we asked for a password
-	/*
 	rand.Seed(time.Now().UnixNano())
-	words, wordsLen, err := createWordsSplit()
+	words, wordsLen, err := createWordsSlice()
 	if err != nil {
 		fmt.Fprintf(writer, "Error: %v", err)
 	}
@@ -43,6 +39,4 @@ func Handler(writer http.ResponseWriter, req *http.Request) {
 		pass = append(pass, word)
 	}
 	fmt.Fprintln(writer, strings.Join(pass, "-"))
-	*/
-	fmt.Fprintln(writer, "TEST")
 }
