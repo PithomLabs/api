@@ -14,8 +14,9 @@ const maxPassLen int = 20
 // Create a slice with the words from the words' file
 func createWordsSlice() ([]string, int, error) {
 	// Read all the words inside the file "wordsGist"
-	file, err := ioutil.ReadFile("/static/wordsGist")
+	file, err := ioutil.ReadFile("template/wordsGist")
 	if err != nil {
+		fmt.Println(err)
 		return nil, 0, err
 	}
 	// Split the words into a slice
@@ -24,7 +25,7 @@ func createWordsSlice() ([]string, int, error) {
 }
 
 // The /rand_dict handler function
-func Handler(writer http.ResponseWriter, req *http.Request) {
+func Handler(writer http.ResponseWriter, request *http.Request) {
 	// Change the rand seed every time we asked for a password
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := createWordsSlice()
