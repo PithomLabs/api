@@ -11,7 +11,7 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# env files
+# Ignore the .env files which contain important infos
 *.env
 
 tmp/
