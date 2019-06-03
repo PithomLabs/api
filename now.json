@@ -6,6 +6,10 @@
 			{
 				"src": "/lambdas/**/*.go",
 				"use": "@now/go"
+			},
+			{
+				"src": "/static/**",
+				"use": "@now/static"
 			}
 	], "routes": [
 		{"src": "/", "dest": "/lambdas/index.go"},
