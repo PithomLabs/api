@@ -14,7 +14,7 @@ const maxPassLen int = 20
 // Create a slice with the words from the words' file
 func createWordsSlice() ([]string, int, error) {
 	// Read all the words inside the file "wordsGist"
-	file, err := ioutil.ReadFile("wordsGist")
+	file, err := ioutil.ReadFile("template/wordsGist")
 	if err != nil {
 		fmt.Println(err)
 		return nil, 0, err
