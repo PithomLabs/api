@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/komfy/api/lambdas/rand"
 	index "github.com/komfy/api/lambdas"
+	"github.com/komfy/api/lambdas/rand"
 	"github.com/komfy/api/lambdas/randDict"
 	"net/http"
 )

@@ -2,11 +2,11 @@ package randDict
 
 import (
 	"fmt"
-	"net/http"
 	"io/ioutil"
+	"math/rand"
+	"net/http"
 	"strings"
 	"time"
-	"math/rand"
 )
 
 const maxPassLen int = 20

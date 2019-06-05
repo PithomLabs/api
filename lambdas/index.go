@@ -2,11 +2,11 @@ package lambdas
 
 import (
 	// Go's packages
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"encoding/json"
 
-	// Community's packages 
+	// Community's packages
 	"github.com/graphql-go/graphql"
 )
 
@@ -15,14 +15,14 @@ func Handler(writer http.ResponseWriter, req *http.Request) {
 	graphqlFields := graphql.Fields{
 		"hello": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func (params graphql.ResolveParams) (interface{}, error) {
-					return "world", nil
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				return "world", nil
 			},
 		},
 	}
 
 	newQuery := graphql.ObjectConfig{
-		Name: "MainQuery",
+		Name:   "MainQuery",
 		Fields: graphqlFields,
 	}
 
@@ -34,11 +34,11 @@ func Handler(writer http.ResponseWriter, req *http.Request) {
 	}
 
 	query := `{
-			hello
-	}`
+    hello
+  }`
 
 	params := graphql.Params{
-		Schema: schema,
+		Schema:        schema,
 		RequestString: query,
 	}
 
