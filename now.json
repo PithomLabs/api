@@ -16,7 +16,7 @@
 				"use": "@now/go",
 				"config": {
 					"includeFiles": [
-						"../template/**"
+						"../template/*"
 					]
 				}
 			}
