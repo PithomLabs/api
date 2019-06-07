@@ -1,4 +1,4 @@
-package lambdas
+package index
 
 import (
 	// Go's packages

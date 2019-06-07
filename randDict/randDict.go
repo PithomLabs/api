@@ -45,7 +45,7 @@ func createWordsSlice() ([]string, int, error) {
 	}()
 
 	// Split the github dictionary's body into a slice
-	words := strings.Split(string(body), "\n")
+	words := strings.Split(string(body), "\r\n")
 	return words, len(words), err
 }
 
@@ -65,6 +65,6 @@ func Handler(writer http.ResponseWriter, request *http.Request) {
 		length += len(word)
 		pass = append(pass, word)
 	}
-	password = strings.Join(pass, "!!!")
+	password := strings.Join(pass, "-")
 	fmt.Fprintln(writer, password)
 }
