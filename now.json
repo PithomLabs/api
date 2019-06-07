@@ -4,21 +4,8 @@
 	"scope": "komfy",
 	"builds": [
 			{
-				"src": "/lambdas/**/*",
+				"src": "/lambdas/*/*",
 				"use": "@now/go"
-			}, 
-			{
-				"src": "/lambdas/rand/rand.go",
-				"use": "@now/go"
-			},
-			{
-				"src": "/lambdas/randDict/randDict.go",
-				"use": "@now/go",
-				"config": {
-					"includeFiles": [
-						"/template/*"
-					]
-				}
 			}
 	], "routes": [
 		{"src": "/", "dest": "/lambdas/index.go"},
@@ -27,7 +14,7 @@
 	],
 	"build": {
 		"env": {
-		  "GO111MODULE": "auto"
+		  "GO111MODULE": "on"
 		}
 	}
 }

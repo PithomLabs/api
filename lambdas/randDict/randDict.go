@@ -20,8 +20,6 @@ const (
 
 // Create a slice with the words from the github link
 func createWordsSlice() ([]string, int, error) {
-	// Read all the words inside the file "wordsGist"
-	file, err := ioutil.ReadFile("template/wordsGist")
 	// Make a get request to the github dictonary's link
 	resp, err := http.Get(githubDictionary)
 	if err != nil {
@@ -30,19 +28,19 @@ func createWordsSlice() ([]string, int, error) {
 	}
 
 	// Read the github dictionary page body
-	body, bErr := ioutil.ReadAll(resp.Body)
-	if bErr != nil {
-		log.Fatal(bErr)
-		return nil, 0, bErr
+	body, bodyErr := ioutil.ReadAll(resp.Body)
+	if bodyErr != nil {
+		log.Fatal(bodyErr)
+		return nil, 0, bodyErr
 	}
 
 	// Defer the Body.Close() func and get any of the errors
 	// It could return, for more info read: 
 	// https://www.joeshaw.org/dont-defer-close-on-writable-files/
 	defer func() {
-		if bodyErr := resp.Body.Close(); err != nil {
-			log.Fatal(bodyErr)
-			err = bodyErr
+		if closedBodyErr := resp.Body.Close(); err != nil {
+			log.Fatal(closedBodyErr)
+			err = closedBodyErr
 		}
 	}()
 
@@ -57,7 +55,8 @@ func Handler(writer http.ResponseWriter, request *http.Request) {
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := createWordsSlice()
 	if err != nil {
-		fmt.Fprintf(writer, "Error: %v", err)
+		log.Fatal(err)
+		
 	}
 
 	var pass []string
@@ -66,5 +65,6 @@ func Handler(writer http.ResponseWriter, request *http.Request) {
 		length += len(word)
 		pass = append(pass, word)
 	}
-	fmt.Fprintln(writer, strings.Join(pass, "-"))
+	password = strings.Join(pass, "!!!")
+	fmt.Fprintln(writer, password)
 }
