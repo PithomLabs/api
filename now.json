@@ -4,7 +4,7 @@
 	"scope": "komfy",
 	"builds": [
 			{
-				"src": "/lambdas/index.go",
+				"src": "/lambdas/**/*",
 				"use": "@now/go"
 			}, 
 			{
