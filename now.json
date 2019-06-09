@@ -4,21 +4,13 @@
 	"scope": "komfy",
 	"builds": [
 		{
-			"src": "/index/index.go",
-			"use": "@now/go"
-		},
-		{
-			"src": "/rand/rand.go",
-			"use": "@now/go"
-		},
-		{
-			"src": "/randDict/randDict.go",
+			"src": "/(lambdas|pkg)/**/*.go",
 			"use": "@now/go"
 		}
 	], "routes": [
-		{"src": "/", "dest": "/index/index.go"},
-		{"src": "/rand", "dest": "/rand/rand.go"},
-		{"src": "/randDict", "dest": "/randDict/randDict.go"}
+		{"src": "/", "dest": "/lambdas/index/index.go"},
+		{"src": "/rand", "dest": "/lambdas/rand/rand.go"},
+		{"src": "/rand_dict", "dest": "/lambdas/randdict/randdict.go"}
 	],
 	"build": {
 		"env": {
