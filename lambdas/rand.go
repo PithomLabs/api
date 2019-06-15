@@ -1,4 +1,4 @@
-package rand
+package lambdas
 
 //Package use for the endpoint /rand and /rand-dict
 //Which print a random generated password on the html page
@@ -11,9 +11,9 @@ import (
 	ru "github.com/komfy/api/pkg/randutils"
 )
 
-// Handler: The handler function used by now
-func Handler(writer http.ResponseWriter, request *http.Request) {
+// RandHandler corresponds to the "/rand" endpoints
+func RandHandler(writer http.ResponseWriter, request *http.Request) {
 	password := ru.GeneratePassword()
 	fmt.Fprintln(writer, password)
-	
+
 }

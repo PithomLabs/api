@@ -4,17 +4,16 @@
 	"scope": "komfy",
 	"builds": [
 		{
-			"src": "/lambdas/**/*.go",
+			"src": "handler.go",
 			"use": "@now/go"
 		}
 	], "routes": [
-		{"src": "/", "dest": "/lambdas/index/index.go"},
-		{"src": "/rand", "dest": "/lambdas/rand/rand.go"},
-		{"src": "/rand_dict", "dest": "/lambdas/randdict/randdict.go"}
+		{"src": "/", "dest": "handler.go"},
+		{"src": "/(.*)", "dest": "handler.go"}
 	],
 	"build": {
 		"env": {
-		  "GO111MODULE": "on"
+		  "GO111MODULE": "auto"
 		}
 	}
 }

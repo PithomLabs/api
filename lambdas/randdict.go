@@ -1,4 +1,4 @@
-package randdict
+package lambdas
 
 import (
 	"fmt"
@@ -9,14 +9,13 @@ import (
 	"time"
 
 	rd "github.com/komfy/api/pkg/dictutils"
-	
 )
 
 // Max password length (the password can actually be more than this number)
 const maxPassLen int = 20
 
-// Handler: The /randDict handler whoch is use by now
-func Handler(writer http.ResponseWriter, request *http.Request) {
+// RandDictHandler corresponds to the "/rand_dict" endpoints
+func RandDictHandler(writer http.ResponseWriter, request *http.Request) {
 	// Change the rand seed every time we asked for a password
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := rd.CreateWordsSlice()
@@ -25,7 +24,6 @@ func Handler(writer http.ResponseWriter, request *http.Request) {
 
 	}
 
-	
 	var pass []string
 	for length := 0; length < maxPassLen; {
 		word := words[rand.Intn(wordsLen)]
