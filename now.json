@@ -3,13 +3,27 @@
 	"name": "api",
 	"scope": "komfy",
 	"builds": [
-		{
-			"src": "handler.go",
-			"use": "@now/go"
-		}
+			{
+				"src": "/lambdas/index.go",
+				"use": "@now/go"
+			}, 
+			{
+				"src": "/lambdas/rand/rand.go",
+				"use": "@now/go"
+			},
+			{
+				"src": "/lambdas/randDict/randDict.go",
+				"use": "@now/go",
+				"config": {
+					"includeFiles": [
+						"../../template/*"
+					]
+				}
+			}
 	], "routes": [
-		{"src": "/", "dest": "handler.go"},
-		{"src": "/(.*)", "dest": "handler.go"}
+		{"src": "/", "dest": "/lambdas/index.go"},
+		{"src": "/rand", "dest": "/lambdas/rand/rand.go"},
+		{"src": "/randDict", "dest": "/lambdas/randDict/randDict.go"}
 	],
 	"build": {
 		"env": {
