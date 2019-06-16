@@ -10,7 +10,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-func Handler(writer http.ResponseWriter, req *http.Request) {
+// IndexHandler corresponds to the "/" endpoints
+func IndexHandler(writer http.ResponseWriter, req *http.Request) {
 	// Creating a Schema
 	graphqlFields := graphql.Fields{
 		"hello": &graphql.Field{

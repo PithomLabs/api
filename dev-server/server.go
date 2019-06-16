@@ -1,15 +1,16 @@
 package main
 
 import (
-	index "github.com/komfy/api/lambdas"
-	"github.com/komfy/api/lambdas/rand"
-	"github.com/komfy/api/lambdas/randDict"
 	"net/http"
+
+	"github.com/komfy/api/lambdas"
+
+	//db "github.com/komfy/api/pkg/database"
 )
 
 func main() {
-	http.HandleFunc("/", index.Handler)
-	http.HandleFunc("/rand", rand.Handler)
-	http.HandleFunc("/randDict", randDict.Handler)
+	http.HandleFunc("/", lambdas.IndexHandler)
+	http.HandleFunc("/rand", lambdas.RandHandler)
+	http.HandleFunc("/rand_dict", lambdas.RandDictHandler)
 	http.ListenAndServe(":8080", nil)
 }
