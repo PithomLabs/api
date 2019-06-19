@@ -13,7 +13,7 @@
 	],
 	"build": {
 		"env": {
-		  "GO111MODULE": "auto"
+			"GO111MODULE": "auto"
 		}
 	}
 }

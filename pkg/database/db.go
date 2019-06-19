@@ -12,11 +12,11 @@ import (
 )
 
 type DB struct {
-	psqlDB *gorm.DB
+	GDB *gorm.DB
 }
 
-func CreateDatabase() *DB {
-	if envError := godotenv.Load("db.env"); envError != nil {
+func OpenDatabase() *DB {
+	if envError := godotenv.Load(".env"); envError != nil {
 		log.Fatal(envError)
 		return nil
 
@@ -30,14 +30,18 @@ func CreateDatabase() *DB {
 	}
 
 	return &DB{
-		psqlDB: db,
+		GDB: db,
 	}
 
 }
 
-func (db *DB) AskUserOfID(id string) *User {
+func (db *DB) CloseDB() error {
+	return db.GDB.Close()
+}
+
+func (db *DB) AskUserByID(id string) *User {
 	user := &User{}
-	db.psqlDB.First(user, id)
+	db.GDB.First(&user, "userID = ?", id)
 
 	return user
 }
