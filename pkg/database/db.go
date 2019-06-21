@@ -8,7 +8,6 @@ import (
 	// Community packages
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/joho/godotenv"
 )
 
 type DB struct {
@@ -16,12 +15,6 @@ type DB struct {
 }
 
 func OpenDatabase() *DB {
-	if envError := godotenv.Load(".env"); envError != nil {
-		log.Fatal(envError)
-		return nil
-
-	}
-
 	db, dbError := gorm.Open("postgres", os.Getenv("URL"))
 	if dbError != nil {
 		log.Fatal(dbError)
@@ -41,7 +34,7 @@ func (db *DB) CloseDB() error {
 
 func (db *DB) AskUserByID(id string) *User {
 	user := &User{}
-	db.GDB.First(&user, "userID = ?", id)
+	db.GDB.First(&user, "user_id = ?", id)
 
 	return user
 }

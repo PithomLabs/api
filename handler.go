@@ -21,7 +21,7 @@ func MainHandler(writer http.ResponseWriter, req *http.Request) {
 	case "/rand_dict":
 		lambdas.RandDictHandler(writer, req)
 
-	case "/dbtest":
+	case "/dbtests":
 		lambdas.DatabaseTest(writer, req)
 
 	default:

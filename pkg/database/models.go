@@ -1,7 +1,7 @@
 package database
 
 type User struct {
-	UserId int64 `gorm:"primary_key"`
+	UserId uint64 `gorm:"AUTO_INCREMENT"` // This is the primary key
 	Name   string
 	NSFW   bool
 }
