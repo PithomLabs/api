@@ -1,31 +1,34 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/komfy/api/lambdas"
 )
 
 // MainHandler works as a ServerMux, just in a simpler way
-func MainHandler(writer http.ResponseWriter, req *http.Request) {
+func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	path := req.URL.Path
 
 	switch path {
 	case "/":
-		lambdas.IndexHandler(writer, req)
+		lambdas.IndexHandler(resp, req)
 
 	case "/rand":
-		lambdas.RandHandler(writer, req)
+		lambdas.RandHandler(resp, req)
 
 	case "/rand_dict":
-		lambdas.RandDictHandler(writer, req)
+		lambdas.RandDictHandler(resp, req)
 
-	case "/dbtests":
-		lambdas.DatabaseTest(writer, req)
+	case "/reg":
+		lambdas.RegisterHandler(resp, req)
+
+	case "/graphql":
+		lambdas.GraphQLHandler(resp, req)
 
 	default:
-		fmt.Fprintf(writer, "Error: Unknown path %s", path)
+		resp.WriteHeader(http.StatusNotFound)
+		resp.Write([]byte("Error 404: Unknown path"))
 
 	}
 

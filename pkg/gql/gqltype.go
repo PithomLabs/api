@@ -1,7 +1,10 @@
 package gql
 
 import (
+	"log"
+
 	"github.com/graphql-go/graphql"
+	db "github.com/komfy/api/pkg/database"
 )
 
 // Main graphql struct
@@ -10,75 +13,94 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
 		"user": &graphql.Field{
-			Type: UserGQL,
+			Type: userGQL,
 			Args: graphql.FieldConfigArgument{
-				"user_id": &graphql.ArgumentConfig{
-					Type: graphql.Int,
+				"userid": &graphql.ArgumentConfig{
+					Type: graphql.String,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				// Connect to database and return the user
-				// Matching the given user_id
+				id, ok := parameters.Args["userid"].(string)
+				if !ok {
+					log.Fatal("UserID should be a string")
+					return nil, nil
+				}
+
+				// Get the user from the ID
+				user := db.AskUserByID(id)
+
+				if user.Name != "" {
+					return user, nil
+				}
+
 				return nil, nil
 			},
 		},
-		"posts": &graphql.Field{
-			Type: graphql.NewList(PostGQL),
+		"post": &graphql.Field{
+			Type: postGQL,
 			Args: graphql.FieldConfigArgument{
-				"first": &graphql.ArgumentConfig{
-					Type: graphql.Int,
+				"postid": &graphql.ArgumentConfig{
+					Type: graphql.String,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
 				// Connect to database
-				// And return the first n-th posts
+				// And return the given post
+				// Which is define by this postid
 				return nil, nil
 			},
 		},
 	},
 })
 
-// User graphql struct
-var UserGQL = graphql.NewObject(graphql.ObjectConfig{
+// User graphql object
+var userGQL = graphql.NewObject(graphql.ObjectConfig{
 	Name: "User",
 	Fields: graphql.Fields{
-		"user_id": &graphql.Field{
+		"userid": &graphql.Field{
 			Type: graphql.ID,
 		},
-		"username": &graphql.Field{
+		"name": &graphql.Field{
 			Type: graphql.String,
 		},
 		"NSFW": &graphql.Field{
 			Type: graphql.Boolean,
 		},
-		"Posts": &graphql.Field{
-			Type: graphql.NewList(PostGQL),
+		"posts": &graphql.Field{
+			Type: graphql.NewList(postGQL),
 			Args: graphql.FieldConfigArgument{
 				"first": &graphql.ArgumentConfig{
 					// Must give a number of this user's posts
 					// Can be zero
-					Type: graphql.NewNonNull(graphql.Int),
+					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
 				// Return the n-th first post of this user
-				return nil, nil
+				post := []db.Post{
+					db.Post{
+						PostID:      15425,
+						Description: "THIS IS A TEST",
+						Type:        1,
+					},
+				}
+				return post, nil
 			},
 		},
 	},
 })
 
-// Post graphql struct
-var PostGQL = graphql.NewObject(graphql.ObjectConfig{
+// Post graphql object
+var postGQL = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Post",
 	Fields: graphql.Fields{
-		"post_id": &graphql.Field{
+		"postid": &graphql.Field{
 			Type: graphql.ID,
 		},
-		"contentType": &graphql.Field{
+		"type": &graphql.Field{
 			Type: contentTypeGQL,
 		},
-		"descr": &graphql.Field{
+		"description": &graphql.Field{
 			Type: graphql.String,
 		},
 		"likes": &graphql.Field{

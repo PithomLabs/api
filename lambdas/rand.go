@@ -5,15 +5,14 @@ package lambdas
 //Which could be used by /auth when creating an account
 
 import (
-	"fmt"
 	"net/http"
 
 	ru "github.com/komfy/api/pkg/randutils"
 )
 
 // RandHandler corresponds to the "/rand" endpoints
-func RandHandler(writer http.ResponseWriter, request *http.Request) {
+func RandHandler(resp http.ResponseWriter, request *http.Request) {
 	password := ru.GeneratePassword()
-	fmt.Fprintln(writer, password)
+	resp.Write([]byte(password))
 
 }
