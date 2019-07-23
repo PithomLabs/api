@@ -10,10 +10,16 @@ import (
 // Do use the url queries and the MainSchema in order to
 // Get values from db
 func Do(request *http.Request) *graphql.Result {
-	queries := request.URL.Query()
+	var token string
+	jwtcookie, cookieError := request.Cookie("jwt-token")
+	if cookieError == nil {
+		token = jwtcookie.Value
+
+	}
+
 	return graphql.Do(graphql.Params{
 		Schema:        MainSchema,
-		RequestString: queries.Get("query"),
-		Context:       context.WithValue(context.Background(), "token", queries.Get("token")),
+		RequestString: request.URL.Query().Get("query"),
+		Context:       context.WithValue(context.Background(), "token", token),
 	})
 }

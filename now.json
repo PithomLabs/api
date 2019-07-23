@@ -13,8 +13,13 @@
 	],
 	"build": {
 		"env": {
-			"GO111MODULE": "auto",
-			"URL": "@database"
+			"GO111MODULE": "on"
 		}
+	},
+	"env": {
+		"database": "@database",
+		"user_email": "@user_email",
+		"pass_email": "@pass_email",
+		"secret": "@secret"
 	}
 }

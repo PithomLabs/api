@@ -23,6 +23,12 @@ func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	case "/reg":
 		lambdas.RegisterHandler(resp, req)
 
+	case "/auth":
+		lambdas.AuthenticationHandler(resp, req)
+
+	case "/verify":
+		lambdas.VerifyHandler(resp, req)
+
 	case "/graphql":
 		lambdas.GraphQLHandler(resp, req)
 

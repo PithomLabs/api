@@ -1,7 +1,10 @@
 package gql
 
 import (
+	"fmt"
 	"log"
+
+	"github.com/komfy/api/pkg/jwt"
 
 	"github.com/graphql-go/graphql"
 	db "github.com/komfy/api/pkg/database"
@@ -13,58 +16,88 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
 		"user": &graphql.Field{
-			Type: userGQL,
+			Type: userWithPostGQL,
 			Args: graphql.FieldConfigArgument{
 				"userid": &graphql.ArgumentConfig{
-					Type: graphql.String,
+					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				id, ok := parameters.Args["userid"].(string)
+				// Check token, it must be valid in order to use the graphql queries
+				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				if err != nil {
+					return nil, err
+
+				}
+
+				id, ok := parameters.Args["userid"].(int)
 				if !ok {
-					log.Fatal("UserID should be a string")
+					log.Fatal("userid should be an integer")
 					return nil, nil
 				}
 
 				// Get the user from the ID
-				user := db.AskUserByID(id)
+				strID := fmt.Sprintf("%v", id)
+				user := db.AskUserByID(strID)
 
-				if user.Name != "" {
-					return user, nil
+				if user.Username == "" {
+					return nil, nil
 				}
 
-				return nil, nil
+				return user, nil
 			},
 		},
 		"post": &graphql.Field{
 			Type: postGQL,
 			Args: graphql.FieldConfigArgument{
 				"postid": &graphql.ArgumentConfig{
-					Type: graphql.String,
+					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				// Connect to database
-				// And return the given post
-				// Which is define by this postid
-				return nil, nil
+				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				if err != nil {
+					return nil, err
+
+				}
+
+				id, ok := parameters.Args["postid"].(int)
+				if !ok {
+					log.Fatal("postid should be a integer.")
+
+				}
+				strID := fmt.Sprintf("%v", id)
+
+				post := db.AskPostByID(strID)
+				if post.PostID == 0 {
+					return nil, nil
+
+				}
+
+				return post, nil
 			},
 		},
 	},
 })
 
 // User graphql object
-var userGQL = graphql.NewObject(graphql.ObjectConfig{
+var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
 	Name: "User",
 	Fields: graphql.Fields{
 		"userid": &graphql.Field{
 			Type: graphql.ID,
 		},
-		"name": &graphql.Field{
+		"username": &graphql.Field{
+			Type: graphql.String,
+		},
+		"email": &graphql.Field{
 			Type: graphql.String,
 		},
 		"NSFW": &graphql.Field{
 			Type: graphql.Boolean,
+		},
+		"avatar": &graphql.Field{
+			Type: graphql.String,
 		},
 		"posts": &graphql.Field{
 			Type: graphql.NewList(postGQL),
@@ -74,18 +107,40 @@ var userGQL = graphql.NewObject(graphql.ObjectConfig{
 					// Can be zero
 					Type: graphql.Int,
 				},
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				// Return the n-th first post of this user
-				post := []db.Post{
-					db.Post{
-						PostID:      15425,
-						Description: "THIS IS A TEST",
-						Type:        1,
-					},
+				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				if err != nil {
+					return nil, err
+
 				}
-				return post, nil
+
+				return nil, nil
 			},
+		},
+	},
+})
+
+var basicUserGQL = graphql.NewObject(graphql.ObjectConfig{
+	Name: "User",
+	Fields: graphql.Fields{
+		"userid": &graphql.Field{
+			Type: graphql.ID,
+		},
+		"username": &graphql.Field{
+			Type: graphql.String,
+		},
+		"email": &graphql.Field{
+			Type: graphql.String,
+		},
+		"NSFW": &graphql.Field{
+			Type: graphql.Boolean,
+		},
+		"avatar": &graphql.Field{
+			Type: graphql.String,
 		},
 	},
 })
@@ -96,6 +151,29 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"postid": &graphql.Field{
 			Type: graphql.ID,
+		},
+		"user": &graphql.Field{
+			Type: basicUserGQL,
+			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
+				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				if err != nil {
+					return nil, err
+
+				}
+
+				// The variable this represent the current post
+				this := parameters.Source.(*db.Post)
+				id := this.UserID
+				strID := fmt.Sprintf("%v", id)
+
+				user := db.AskUserByID(strID)
+				if user.Username == "" {
+					return nil, nil
+
+				}
+
+				return user, nil
+			},
 		},
 		"type": &graphql.Field{
 			Type: contentTypeGQL,

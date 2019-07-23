@@ -7,13 +7,15 @@ import (
 	"net/url"
 
 	db "github.com/komfy/api/pkg/database"
+	mail "github.com/komfy/api/pkg/email"
+	err "github.com/komfy/api/pkg/error"
 	bc "golang.org/x/crypto/bcrypt"
 )
 
 const passwordCreationCost = 8
 
 // CreateNewUserWithForm creates a new user based on the form urlencoded values
-func CreateNewUserWithForm(formValues url.Values) {
+func CreateNewUserWithForm(formValues url.Values) error {
 	// Check if we have a password
 	pass, passExists := formValues["password"]
 	// Check if we have an username
@@ -23,35 +25,73 @@ func CreateNewUserWithForm(formValues url.Values) {
 
 	// If either the password or the username is missing
 	// Returns an error
-	if !(passExists && nameExists) {
-		log.Fatal("An error occured, values are missing")
+	if !(passExists && nameExists && emailExists) {
+		log.Fatal("TEST")
+		return err.ErrValueMissing
 	}
 
 	// Hash the password using bcrypt hash method
-	hashedPass := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
+	hashedPass, hashError := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
+	if hashError != nil {
+		return hashError
+	}
 
-	// Create the user and fill it with username and password
+	// Create the user and fill it with username, password and email
 	user := &db.User{
-		Name:     username[0],
-		Password: hashedPass,
+		Username: username[0],
+		Password: string(hashedPass),
+		Email:    email[0],
+	}
+	// Deleting the password from the hashedPass variable
+	hashedPass = []byte("")
+
+	// We are checking if the user isn't a duplicate of another one
+	// If not...
+	if db.IsUserValid(user) {
+		// ...we add this user to database
+		// And send him a verification email
+		db.AddUserToDB(user)
+		mail.SendMail(user)
+
+	} else {
+		return err.ErrUserNotValid
+
 	}
 
-	// If the email exists, add it to the user object
-	if emailExists {
-		user.Email = email[0]
-	}
+	return nil
 
-	db.AddUserToDB(user)
 }
 
 // CreateNewUserWithJSON creates a new user based on a json object
-func CreateNewUserWithJSON(requestBody io.ReadCloser) {
+func CreateNewUserWithJSON(requestBody io.ReadCloser) error {
 	// Create an empty user
 	user := &db.User{}
 	// Decode the request body and fill the user object with the infos inside
-	json.NewEncoder(requestBody).Decode(&user)
-	// Hash the user password
-	user.Password = bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
+	json.NewDecoder(requestBody).Decode(&user)
 
-	db.AddUserToDB(user)
+	if user.Username == "" || user.Email == "" {
+		return err.ErrValueMissing
+
+	}
+	// Hash the user password
+	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
+	if errCrypt != nil {
+		return errCrypt
+
+	}
+
+	user.Password = string(hashedPassword)
+	hashedPassword = []byte("")
+
+	if db.IsUserValid(user) {
+		db.AddUserToDB(user)
+		mail.SendMail(user)
+
+	} else {
+		return err.ErrUserNotValid
+
+	}
+
+	return nil
+
 }
