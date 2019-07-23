@@ -50,15 +50,12 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 		// If we reach this place, this mean
 		// The authentication went successfully
-		cookie := &http.Cookie{
+		cookie := http.Cookie{
 			Name:  "jwt-token",
 			Value: jwtToken,
 		}
-		// Change the cookie value to the token one
-		cookie.Value = jwtToken
 		// Add the cookie to the request
-		req.AddCookie(cookie)
-		resp.Write([]byte(cookie.Value))
+		http.SetCookie(resp, &cookie)
 		// Redirect after authentication
 		http.Redirect(resp, req, redirectAuthURL, http.StatusSeeOther)
 
