@@ -54,10 +54,12 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 			Name:  "jwt-token",
 			Value: jwtToken,
 		}
-		// Add the cookie to the request
-		http.SetCookie(resp, &cookie)
+		newRequest := &http.Request{
+			Method: "GET",
+		}
+		newRequest.AddCookie(&cookie)
 		// Redirect after authentication
-		http.Redirect(resp, req, redirectAuthURL, http.StatusSeeOther)
+		http.Redirect(resp, newRequest, redirectAuthURL, http.StatusSeeOther)
 
 	} else {
 		resp.WriteHeader(http.StatusMethodNotAllowed)
