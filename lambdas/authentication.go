@@ -54,9 +54,13 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 			Name:  "jwt-token",
 			Value: jwtToken,
 		}
-		newRequest := &http.Request{
-			Method: "GET",
+		// Create new request with the cookie inside
+		newRequest, err := http.NewRequest("GET", redirectAuthURL, nil)
+		if err != nil {
+			log.Fatal(err)
+
 		}
+
 		newRequest.AddCookie(&cookie)
 		// Redirect after authentication
 		http.Redirect(resp, newRequest, redirectAuthURL, http.StatusSeeOther)
