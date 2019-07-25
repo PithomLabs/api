@@ -8,8 +8,14 @@
 			"use": "@now/go"
 		}
 	], "routes": [
-		{"src": "/", "dest": "handler.go"},
-		{"src": "/(.*)", "dest": "handler.go"}
+		{
+			"src": "/", 
+			"dest": "handler.go"
+		},
+		{
+			"src": "/(.*)", 
+			"dest": "handler.go"
+		}
 	],
 	"build": {
 		"env": {
