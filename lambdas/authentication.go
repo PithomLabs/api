@@ -1,13 +1,14 @@
 package lambdas
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/komfy/api/pkg/auth"
 )
 
-const redirectAuthURL = "https://komfy.now.sh"
+const redirectAuthURL = "https://komfy.now.sh/set_cookie?token=%s"
 
 // AuthenticationHandler handle the /auth endpoint
 func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
@@ -48,27 +49,9 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 		}
 
-		// If we reach this place, this mean
-		// The authentication went successfully
-		cookie := http.Cookie{
-			Name:  "jwt-token",
-			Value: jwtToken,
-			Path:  "/",
-		}
-		// Create new request with the cookie inside
-		newRequest, err := http.NewRequest("GET", redirectAuthURL, nil)
-		if err != nil {
-			log.Fatal(err)
+		realTokenURL := fmt.Sprintf(redirectAuthURL, jwtToken)
 
-		}
-
-		newRequest.AddCookie(&cookie)
-		newRequest.Header.Add("Access-Control-Allow-Origin:", redirectAuthURL)
-		newRequest.Header.Add("Access-Control-Allow-Credentials:", "true")
-		newRequest.Header.Add("Access-Control-Allow-Methods:", "GET, POST")
-		newRequest.Header.Add("Access-Control-Allow-Headers:", "Content-Type, *")
-		// Redirect after authentication
-		http.Redirect(resp, newRequest, redirectAuthURL, http.StatusSeeOther)
+		http.Redirect(resp, req, realTokenURL, http.StatusSeeOther)
 
 	} else {
 		resp.WriteHeader(http.StatusMethodNotAllowed)
