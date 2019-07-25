@@ -1,7 +1,6 @@
 package lambdas
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 const maxPassLen int = 20
 
 // RandDictHandler corresponds to the "/rand_dict" endpoints
-func RandDictHandler(writer http.ResponseWriter, request *http.Request) {
+func RandDictHandler(resp http.ResponseWriter, request *http.Request) {
 	// Change the rand seed every time we asked for a password
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := rd.CreateWordsSlice()
@@ -31,5 +30,5 @@ func RandDictHandler(writer http.ResponseWriter, request *http.Request) {
 		pass = append(pass, word)
 	}
 	password := strings.Join(pass, "-")
-	fmt.Fprintln(writer, password)
+	resp.Write([]byte(password))
 }

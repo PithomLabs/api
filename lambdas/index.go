@@ -11,7 +11,7 @@ import (
 )
 
 // IndexHandler corresponds to the "/" endpoints
-func IndexHandler(writer http.ResponseWriter, req *http.Request) {
+func IndexHandler(resp http.ResponseWriter, req *http.Request) {
 	// Creating a Schema
 	graphqlFields := graphql.Fields{
 		"hello": &graphql.Field{
@@ -31,7 +31,7 @@ func IndexHandler(writer http.ResponseWriter, req *http.Request) {
 		Query: graphql.NewObject(newQuery),
 	})
 	if _err != nil {
-		fmt.Fprintf(writer, "Unable to create the default schema: %v", _err)
+		fmt.Fprintf(resp, "Unable to create the default schema: %v", _err)
 	}
 
 	query := `{
@@ -46,9 +46,9 @@ func IndexHandler(writer http.ResponseWriter, req *http.Request) {
 	response := graphql.Do(params)
 	responseJSON, _err := json.Marshal(response)
 	if _err != nil {
-		fmt.Fprintf(writer, "Unable to marshal the graphql response")
+		fmt.Fprintf(resp, "Unable to marshal the graphql response")
 	}
 
-	fmt.Fprintf(writer, "%s", responseJSON)
+	fmt.Fprintf(resp, "%s", responseJSON)
 
 }
