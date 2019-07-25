@@ -9,7 +9,7 @@ import (
 
 // VerifyHandler is the endpoint for /verify which is used for mail verification
 func VerifyHandler(resp http.ResponseWriter, req *http.Request) {
-	verificationCode := req.URL.Query().Get("token")
+	verificationCode := req.URL.Query().Get("verify_code")
 
 	err := mail.VerifyUser(verificationCode)
 	if err != nil {

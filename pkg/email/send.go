@@ -11,7 +11,7 @@ import (
 
 const (
 	mailBody     = "This is a verification email, here is your verification link:\n%s"
-	mailTemplate = "ourEmailLink/verify?token=the_token_here"
+	mailTemplate = "api.komfy.now.sh/verify?verify_code=%v"
 	subject      = "Email Verification"
 )
 
@@ -23,7 +23,7 @@ func SendMail(user *db.User) {
 	msg := "From: " + from +
 		"\nTo: " + user.Email +
 		"\nSubject: " + subject +
-		"\n\n" + fmt.Sprintf(mailBody, mailTemplate)
+		"\n\n" + fmt.Sprintf(mailBody, fmt.Sprintf(mailTemplate, user.UserID))
 
 	mailError := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth(
