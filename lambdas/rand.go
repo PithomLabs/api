@@ -7,11 +7,13 @@ package lambdas
 import (
 	"net/http"
 
+	nu "github.com/komfy/api/pkg/netutils"
 	ru "github.com/komfy/api/pkg/randutils"
 )
 
 // RandHandler corresponds to the "/rand" endpoints
 func RandHandler(resp http.ResponseWriter, request *http.Request) {
+	nu.EnableCORS(&resp)
 	password := ru.GeneratePassword()
 	resp.Write([]byte(password))
 
