@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/komfy/api/pkg/auth"
 	nu "github.com/komfy/api/pkg/netutils"
@@ -19,35 +20,48 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		// Create the jwt-token variable
 		var jwtToken string
 		// Check what type of request it is
-		ok := req.Header["Content-Type"][0] == "application/x-www-form-urlencoded"
+		content := req.Header["Content-Type"][0]
 		// Based on the content-type header,
 		// We are going to parse the information
 		// Using different functions
-		if ok {
+		if content == "application/x-www-form-urlencoded" {
 			// Parse the form values
 			req.ParseForm()
 
-			formToken, err := auth.AuthenticateWithForm(req.PostForm)
+			formToken, err := auth.AuthenticateWithForm(resp, req.PostForm)
 			if err != nil {
 				resp.WriteHeader(http.StatusBadRequest)
 				log.Fatal(err)
-				return
+
 			}
 
 			// Update the value of the token
 			jwtToken = formToken
 
-		} else {
+		} else if content == "application/json" {
 			// Use the post form body,
 			// Which should be a json object
-			jsonToken, err := auth.AuthenticateWithJSON(req.Body)
+			jsonToken, err := auth.AuthenticateWithJSON(resp, req.Body)
 			if err != nil {
 				resp.WriteHeader(http.StatusBadRequest)
 				log.Fatal(err)
-				return
+
 			}
 			// Same as line 35
 			jwtToken = jsonToken
+
+		} else if content = strings.Split(content, ";")[0]; content == "multipart/form-data" {
+			req.ParseMultipartForm(0)
+
+			formData := req.Form
+
+			dataToken, err := auth.AuthenticateWithFormData(resp, formData)
+			if err != nil {
+				resp.WriteHeader(http.StatusBadRequest)
+				log.Fatal(err)
+			}
+
+			jwtToken = dataToken
 
 		}
 
@@ -56,8 +70,8 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		http.Redirect(resp, req, realTokenURL, http.StatusSeeOther)
 
 	} else {
+		resp.Write([]byte("Bad request method"))
 		resp.WriteHeader(http.StatusMethodNotAllowed)
-		log.Fatal("Bad Method")
 
 	}
 }

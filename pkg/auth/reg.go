@@ -3,7 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"io"
-	"log"
+	"net/http"
 	"net/url"
 
 	db "github.com/komfy/api/pkg/database"
@@ -14,8 +14,24 @@ import (
 
 const passwordCreationCost = 8
 
+// CreateNewUserWithFormData creates a new url.Values object
+// And add the formValue's values to it
+// Then call CreateNewUserWithForm
+func CreateNewUserWithFormData(resp http.ResponseWriter, formValue map[string][]string) error {
+	urlValuesObject := url.Values{}
+
+	for key, value := range formValue {
+		if ok := len(value) == 1; ok {
+			urlValuesObject.Set(key, value[0])
+
+		}
+	}
+
+	return CreateNewUserWithForm(resp, urlValuesObject)
+}
+
 // CreateNewUserWithForm creates a new user based on the form urlencoded values
-func CreateNewUserWithForm(formValues url.Values) error {
+func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) error {
 	// Check if we have a password
 	pass, passExists := formValues["password"]
 	// Check if we have an username
@@ -26,13 +42,14 @@ func CreateNewUserWithForm(formValues url.Values) error {
 	// If either the password or the username is missing
 	// Returns an error
 	if !(passExists && nameExists && emailExists) {
-		log.Fatal("TEST")
+		resp.Write([]byte(err.ErrValueMissing.Error()))
 		return err.ErrValueMissing
 	}
 
 	// Hash the password using bcrypt hash method
 	hashedPass, hashError := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
 	if hashError != nil {
+		resp.Write([]byte("An error occured"))
 		return hashError
 	}
 
@@ -54,6 +71,7 @@ func CreateNewUserWithForm(formValues url.Values) error {
 		mail.SendMail(user)
 
 	} else {
+		resp.Write([]byte(err.ErrUserNotValid.Error()))
 		return err.ErrUserNotValid
 
 	}
@@ -63,19 +81,21 @@ func CreateNewUserWithForm(formValues url.Values) error {
 }
 
 // CreateNewUserWithJSON creates a new user based on a json object
-func CreateNewUserWithJSON(requestBody io.ReadCloser) error {
+func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) error {
 	// Create an empty user
 	user := &db.User{}
 	// Decode the request body and fill the user object with the infos inside
 	json.NewDecoder(requestBody).Decode(&user)
 
-	if user.Username == "" || user.Email == "" {
+	if user.Username == "" || user.Email == "" || user.Password == "" {
+		resp.Write([]byte(err.ErrValueMissing.Error()))
 		return err.ErrValueMissing
 
 	}
 	// Hash the user password
 	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
 	if errCrypt != nil {
+		resp.Write([]byte("An error occured"))
 		return errCrypt
 
 	}
@@ -88,6 +108,7 @@ func CreateNewUserWithJSON(requestBody io.ReadCloser) error {
 		mail.SendMail(user)
 
 	} else {
+		resp.Write([]byte(err.ErrValueMissing.Error()))
 		return err.ErrUserNotValid
 
 	}

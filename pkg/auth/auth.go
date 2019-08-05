@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"io"
+	"net/http"
 	"net/url"
 
 	"github.com/komfy/api/pkg/jwt"
@@ -13,13 +14,29 @@ import (
 	err "github.com/komfy/api/pkg/error"
 )
 
+// AuthenticateWithFormData is used in order to
+// authenticate user based on the form-data values
+func AuthenticateWithFormData(resp http.ResponseWriter, formValues map[string][]string) (string, error) {
+	urlValuesObject := url.Values{}
+
+	for key, value := range formValues {
+		if ok := len(value) == 1; ok {
+			urlValuesObject.Set(key, value[0])
+
+		}
+	}
+
+	return AuthenticateWithForm(resp, urlValuesObject)
+}
+
 // AuthenticateWithForm is used in order to
 // authenticate user based on a urlencoded form
-func AuthenticateWithForm(values url.Values) (string, error) {
+func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, error) {
 	username, userExist := values["username"]
 	password, passExist := values["password"]
 
 	if !(userExist && passExist) {
+		resp.Write([]byte(err.ErrValueMissing.Error()))
 		return "", err.ErrValueMissing
 
 	}
@@ -28,6 +45,7 @@ func AuthenticateWithForm(values url.Values) (string, error) {
 
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password[0]))
 	if compareError != nil {
+		resp.Write([]byte("Password is not right"))
 		return "", compareError
 
 	}
@@ -39,7 +57,7 @@ func AuthenticateWithForm(values url.Values) (string, error) {
 
 // AuthenticateWithJSON is used in order to
 // authenticate user based on a json object
-func AuthenticateWithJSON(jsonBody io.ReadCloser) (string, error) {
+func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (string, error) {
 	// Create an empty User object
 	user := db.User{}
 	// Decode the json object into the user
@@ -53,6 +71,7 @@ func AuthenticateWithJSON(jsonBody io.ReadCloser) (string, error) {
 	user.Password = ""
 
 	if compareError != nil {
+		resp.Write([]byte("Password is not right"))
 		return "", compareError
 
 	}
