@@ -70,6 +70,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		http.Redirect(resp, req, realTokenURL, http.StatusSeeOther)
 
 	} else {
+		// Write an error message when request isn't post
 		resp.Write([]byte("Bad request method"))
 		resp.WriteHeader(http.StatusMethodNotAllowed)
 
