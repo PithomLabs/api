@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -35,10 +36,19 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 	username, userExist := values["username"]
 	password, passExist := values["password"]
 
-	if !(userExist && passExist) {
-		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
-		return "", err.ErrValueMissing
+	// Check for credentials
+	if valueMissing := !(passExist && userExist); valueMissing {
+		var errorMessage string
 
+		if !passExist {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
+
+		} else if !userExist {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
+
+		}
+		err.HandleErrorInHTTP(resp, errorMessage)
+		return "", err.ErrValueMissing
 	}
 
 	dbUser := db.AskUserByUsername(username[0])
@@ -62,6 +72,22 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 	user := db.User{}
 	// Decode the json object into the user
 	json.NewDecoder(jsonBody).Decode(&user)
+
+	// Check for credentials
+	if valueMissing := !(user.Username != "" && user.Email != "" && user.Password != ""); valueMissing {
+		var errorMessage string
+
+		if user.Username == "" {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
+
+		} else if user.Password == "" {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
+
+		}
+		err.HandleErrorInHTTP(resp, errorMessage)
+		return "", err.ErrValueMissing
+	}
+
 	dbUser := db.AskUserByUsername(user.Username)
 
 	// If compareError == nil
