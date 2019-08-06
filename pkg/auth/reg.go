@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -41,8 +42,21 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 
 	// If either the password or the username is missing
 	// Returns an error
-	if !(passExists && nameExists && emailExists) {
-		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
+	if valueMissing := !(passExists && nameExists && emailExists); valueMissing {
+		var errorMessage string
+
+		if !passExists {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
+
+		} else if !nameExists {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
+
+		} else if !emailExists {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "email")
+
+		}
+
+		err.HandleErrorInHTTP(resp, errorMessage)
 		return err.ErrValueMissing
 	}
 
@@ -87,11 +101,24 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	// Decode the request body and fill the user object with the infos inside
 	json.NewDecoder(requestBody).Decode(&user)
 
-	if user.Username == "" || user.Email == "" || user.Password == "" {
-		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
-		return err.ErrValueMissing
+	// Check if all credentials exist
+	if valueMissing := !(user.Username != "" && user.Email != "" && user.Password != ""); valueMissing {
+		var errorMessage string
 
+		if user.Username == "" {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
+
+		} else if user.Email == "" {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "email")
+
+		} else if user.Password == "" {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
+
+		}
+		err.HandleErrorInHTTP(resp, errorMessage)
+		return err.ErrValueMissing
 	}
+
 	// Hash the user password
 	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
 	if errCrypt != nil {

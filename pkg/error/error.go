@@ -6,10 +6,12 @@ import (
 )
 
 var (
-	// ErrValueMissing is used inside reg.go
-	ErrValueMissing = errors.New("values are missing, bad request")
-	// ErrUserNotValid is used in reg.go
-	ErrUserNotValid = errors.New("user is not valid")
+	// ErrValueMissing is used inside reg.go and auth.go
+	ErrValueMissing = errors.New("value is missing")
+	// ErrValueMissingTemplate is used inside reg.go and auth.go
+	ErrValueMissingTemplate = "sorry but you forgot ur %s"
+	// ErrUserNotValid is used in reg.go and auth.go
+	ErrUserNotValid = errors.New("those credentials are already used")
 	// ErrUserAlreadyChecked is used in verify.go
 	ErrUserAlreadyChecked = errors.New("user is already checked")
 	// ErrTokenForgotten is used in jwt.go
