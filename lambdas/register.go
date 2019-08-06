@@ -26,8 +26,8 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 			// We create the user based on the PostForm variable
 			err := auth.CreateNewUserWithForm(resp, req.PostForm)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
+				return
 			}
 
 		} else if content[0] == "application/json" {
@@ -36,8 +36,8 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 			// Which will be a json object
 			err := auth.CreateNewUserWithJSON(resp, req.Body)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
+				return
 			}
 
 		} else if content = strings.Split(content[0], ";"); content[0] == "multipart/form-data" {
@@ -47,16 +47,16 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 
 			err := auth.CreateNewUserWithFormData(resp, formData)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
+				return
 			}
 		}
 		// Redirect to komfy main page
 		http.Redirect(resp, req, redirectRegURL, http.StatusSeeOther)
 
 	} else {
-		resp.Write([]byte("Bad request method"))
 		resp.WriteHeader(http.StatusMethodNotAllowed)
+		resp.Write([]byte("Bad request method"))
 
 	}
 }

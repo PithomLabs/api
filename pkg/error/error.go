@@ -2,6 +2,7 @@ package error
 
 import (
 	"errors"
+	"net/http"
 )
 
 var (
@@ -18,3 +19,16 @@ var (
 	// ErrTokenNotValid is used in jwt.go
 	ErrTokenNotValid = errors.New("token is not valid")
 )
+
+// HandleErrorInHTTP is used in order to write messages
+// On api webpage when an error occurs
+func HandleErrorInHTTP(resp http.ResponseWriter, err interface{}) {
+	resp.WriteHeader(http.StatusBadRequest)
+
+	if message, ok := err.(string); ok {
+		resp.Write([]byte(message))
+
+	} else {
+		resp.Write([]byte(err.(error).Error()))
+	}
+}

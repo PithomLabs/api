@@ -30,8 +30,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 			formToken, err := auth.AuthenticateWithForm(resp, req.PostForm)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
 
 			}
 
@@ -43,8 +42,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 			// Which should be a json object
 			jsonToken, err := auth.AuthenticateWithJSON(resp, req.Body)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
 
 			}
 			// Same as line 35
@@ -57,8 +55,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 			dataToken, err := auth.AuthenticateWithFormData(resp, formData)
 			if err != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				log.Fatal(err)
+				log.Println(err)
 			}
 
 			jwtToken = dataToken
