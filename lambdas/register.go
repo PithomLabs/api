@@ -16,10 +16,16 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	nu.EnableCORS(&resp)
 	if req.Method == http.MethodPost {
 		// We collect the header Content-Type
-		content := req.Header["Content-Type"]
+		content, ok := req.Header["Content-Type"]
 		// Based on the content-type header value,
 		// Use different type of registration
-		if content[0] == "application/x-www-form-urlencoded" {
+		if !ok {
+			resp.WriteHeader(http.StatusBadRequest)
+			resp.Write([]byte("You forgot to add a Content-Type header :D"))
+			log.Println("Missing content-type header")
+			return
+
+		} else if content[0] == "application/x-www-form-urlencoded" {
 			// We then parse the query from url and form
 			// Into the variable req.Form and req.PostForm
 			req.ParseForm()
@@ -41,7 +47,13 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 			}
 
 		} else if content = strings.Split(content[0], ";"); content[0] == "multipart/form-data" {
-			req.ParseMultipartForm(0)
+			ferr := req.ParseMultipartForm(0)
+			if ferr != nil {
+				resp.WriteHeader(http.StatusBadRequest)
+				resp.Write([]byte("The multipart/form-data doesn't have a boundary"))
+				log.Println(ferr)
+				return
+			}
 
 			formData := req.MultipartForm.Value
 
