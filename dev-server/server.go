@@ -24,4 +24,5 @@ func main() {
 	http.HandleFunc("/reg", lambdas.RegisterHandler)
 	http.HandleFunc("/graphql", lambdas.GraphQLHandler)
 	http.ListenAndServe(":8080", nil)
+
 }
