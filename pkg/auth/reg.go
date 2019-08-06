@@ -42,14 +42,14 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 	// If either the password or the username is missing
 	// Returns an error
 	if !(passExists && nameExists && emailExists) {
-		resp.Write([]byte(err.ErrValueMissing.Error()))
+		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
 		return err.ErrValueMissing
 	}
 
 	// Hash the password using bcrypt hash method
 	hashedPass, hashError := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
 	if hashError != nil {
-		resp.Write([]byte("An error occured"))
+		err.HandleErrorInHTTP(resp, "An error occured while hashing")
 		return hashError
 	}
 
@@ -71,7 +71,7 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 		mail.SendMail(user)
 
 	} else {
-		resp.Write([]byte(err.ErrUserNotValid.Error()))
+		err.HandleErrorInHTTP(resp, err.ErrUserNotValid)
 		return err.ErrUserNotValid
 
 	}
@@ -88,14 +88,14 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	json.NewDecoder(requestBody).Decode(&user)
 
 	if user.Username == "" || user.Email == "" || user.Password == "" {
-		resp.Write([]byte(err.ErrValueMissing.Error()))
+		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
 		return err.ErrValueMissing
 
 	}
 	// Hash the user password
 	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
 	if errCrypt != nil {
-		resp.Write([]byte("An error occured"))
+		err.HandleErrorInHTTP(resp, "An error occured while hashing")
 		return errCrypt
 
 	}
@@ -108,7 +108,7 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 		mail.SendMail(user)
 
 	} else {
-		resp.Write([]byte(err.ErrValueMissing.Error()))
+		err.HandleErrorInHTTP(resp, err.ErrUserNotValid)
 		return err.ErrUserNotValid
 
 	}
