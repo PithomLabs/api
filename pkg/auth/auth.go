@@ -40,10 +40,10 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 	if valueMissing := !(passExist && userExist); valueMissing {
 		var errorMessage string
 
-		if !(passExist && password[0] == "") {
+		if !(passExist && password[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
-		} else if !userExist {
+		} else if !(userExist && username[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
 		}
