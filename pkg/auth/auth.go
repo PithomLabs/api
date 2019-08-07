@@ -55,7 +55,7 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password[0]))
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, err.ErrValueMissing)
+		err.HandleErrorInHTTP(resp, "An error occured will comparing password with db")
 		return "", compareError
 
 	}
@@ -97,7 +97,7 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 	user.Password = ""
 
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while hashing")
+		err.HandleErrorInHTTP(resp, "An error occured while comparing password with db")
 		return "", compareError
 
 	}
