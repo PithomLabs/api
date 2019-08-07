@@ -40,14 +40,14 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 	if valueMissing := !(passExist && userExist); valueMissing {
 		var errorMessage string
 
-		if !passExist {
+		if !(passExist && password[0] == "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
 		} else if !userExist {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
 		}
-		err.HandleErrorInHTTP(resp, errorMessage)
+		err.HandleErrorInHTTP(resp, err.CreateError(errorMessage))
 		return "", err.ErrValueMissing
 	}
 
@@ -55,7 +55,7 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password[0]))
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, "An error occured will comparing password with db")
+		err.HandleErrorInHTTP(resp, err.ErrBadPassword)
 		return "", compareError
 
 	}
@@ -84,7 +84,7 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
 		}
-		err.HandleErrorInHTTP(resp, errorMessage)
+		err.HandleErrorInHTTP(resp, err.CreateError(errorMessage))
 		return "", err.ErrValueMissing
 	}
 
@@ -97,7 +97,7 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 	user.Password = ""
 
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while comparing password with db")
+		err.HandleErrorInHTTP(resp, err.ErrBadPassword)
 		return "", compareError
 
 	}

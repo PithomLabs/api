@@ -84,8 +84,8 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 	} else {
 		// Write an error message when request isn't post
-		resp.Write([]byte("Bad request method"))
 		resp.WriteHeader(http.StatusMethodNotAllowed)
+		resp.Write([]byte("Bad request method"))
 
 	}
 }

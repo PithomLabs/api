@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/rand", lambdas.RandHandler)
 	http.HandleFunc("/rand_dict", lambdas.RandDictHandler)
 	http.HandleFunc("/reg", lambdas.RegisterHandler)
+	http.HandleFunc("/auth", lambdas.AuthenticationHandler)
 	http.HandleFunc("/graphql", lambdas.GraphQLHandler)
 	http.ListenAndServe(":8080", nil)
 
