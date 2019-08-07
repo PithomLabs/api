@@ -63,7 +63,7 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 	// Hash the password using bcrypt hash method
 	hashedPass, hashError := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
 	if hashError != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while hashing")
+		err.HandleErrorInHTTP(resp, "An error occured while hashing password")
 		return hashError
 	}
 
@@ -122,7 +122,7 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	// Hash the user password
 	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
 	if errCrypt != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while hashing")
+		err.HandleErrorInHTTP(resp, "An error occured while hashing password")
 		return errCrypt
 
 	}
