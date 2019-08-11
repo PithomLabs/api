@@ -19,7 +19,7 @@ var (
 func InitializeMemoryStorage() {
 	IsInitialize = !IsInitialize
 
-	memory := captcha.NewMemoryStore(1000, time.Hour*1)
+	memory := captcha.NewMemoryStore(1000, time.Hour*1000000)
 	captcha.SetCustomStore(memory)
 	store = memory
 
