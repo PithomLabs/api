@@ -12,6 +12,10 @@ var (
 	ErrValueMissingTemplate = "sorry but you forgot ur %s"
 	// ErrUserNotValid is used in reg.go and auth.go
 	ErrUserNotValid = errors.New("those credentials are already used")
+	// ErrBadPassword is used in auth.go
+	ErrBadPassword = errors.New("given password does not match with db")
+	// ErrHashing is used in reg.go
+	ErrHashing = errors.New("An error occured while trying to hash password")
 	// ErrUserAlreadyChecked is used in verify.go
 	ErrUserAlreadyChecked = errors.New("user is already checked")
 	// ErrTokenForgotten is used in jwt.go
@@ -20,17 +24,22 @@ var (
 	ErrSigningMethod = errors.New("signing method wasn't matching")
 	// ErrTokenNotValid is used in jwt.go
 	ErrTokenNotValid = errors.New("token is not valid")
+	// ErrCaptchaHeaderMissing is used in captcha.go
+	ErrCaptchaHeaderMissing = errors.New("the X-Captcha-ID header is missing")
+	// ErrDigitsMissing is used in captcha.go
+	ErrDigitsMissing = errors.New("digits are missing")
 )
 
 // HandleErrorInHTTP is used in order to write messages
 // On api webpage when an error occurs
-func HandleErrorInHTTP(resp http.ResponseWriter, err interface{}) {
+// Write a StatusBadRequest to the response
+func HandleErrorInHTTP(resp http.ResponseWriter, err error) {
 	resp.WriteHeader(http.StatusBadRequest)
 
-	if message, ok := err.(string); ok {
-		resp.Write([]byte(message))
+	resp.Write([]byte(err.Error()))
+}
 
-	} else {
-		resp.Write([]byte(err.(error).Error()))
-	}
+// CreateError create a new error based on the given string message
+func CreateError(errorMessage string) error {
+	return errors.New(errorMessage)
 }

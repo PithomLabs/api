@@ -34,36 +34,36 @@ func CreateNewUserWithFormData(resp http.ResponseWriter, formValue map[string][]
 // CreateNewUserWithForm creates a new user based on the form urlencoded values
 func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) error {
 	// Check if we have a password
-	pass, passExists := formValues["password"]
+	password, passExist := formValues["password"]
 	// Check if we have an username
-	username, nameExists := formValues["username"]
+	username, userExist := formValues["username"]
 	// Check if we have an email
-	email, emailExists := formValues["email"]
+	email, emailExist := formValues["email"]
 
 	// If either the password or the username is missing
 	// Returns an error
-	if valueMissing := !(passExists && nameExists && emailExists); valueMissing {
+	if valueMissing := !(passExist && userExist && emailExist); valueMissing {
 		var errorMessage string
 
-		if !passExists {
+		if !(passExist && password[0] == "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
-		} else if !nameExists {
+		} else if !(userExist && username[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
-		} else if !emailExists {
+		} else if !(emailExist && email[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "email")
 
 		}
 
-		err.HandleErrorInHTTP(resp, errorMessage)
+		err.HandleErrorInHTTP(resp, err.CreateError(errorMessage))
 		return err.ErrValueMissing
 	}
 
 	// Hash the password using bcrypt hash method
-	hashedPass, hashError := bc.GenerateFromPassword([]byte(pass[0]), passwordCreationCost)
+	hashedPass, hashError := bc.GenerateFromPassword([]byte(password[0]), passwordCreationCost)
 	if hashError != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while hashing password")
+		err.HandleErrorInHTTP(resp, err.ErrHashing)
 		return hashError
 	}
 
@@ -115,14 +115,14 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
 		}
-		err.HandleErrorInHTTP(resp, errorMessage)
+		err.HandleErrorInHTTP(resp, err.CreateError(errorMessage))
 		return err.ErrValueMissing
 	}
 
 	// Hash the user password
 	hashedPassword, errCrypt := bc.GenerateFromPassword([]byte(user.Password), passwordCreationCost)
 	if errCrypt != nil {
-		err.HandleErrorInHTTP(resp, "An error occured while hashing password")
+		err.HandleErrorInHTTP(resp, err.ErrHashing)
 		return errCrypt
 
 	}
