@@ -24,10 +24,15 @@ var (
 	ErrSigningMethod = errors.New("signing method wasn't matching")
 	// ErrTokenNotValid is used in jwt.go
 	ErrTokenNotValid = errors.New("token is not valid")
+	// ErrCaptchaHeaderMissing is used in captcha.go
+	ErrCaptchaHeaderMissing = errors.New("the X-Captcha-ID header is missing")
+	// ErrDigitsMissing is used in captcha.go
+	ErrDigitsMissing = errors.New("digits are missing")
 )
 
 // HandleErrorInHTTP is used in order to write messages
 // On api webpage when an error occurs
+// Write a StatusBadRequest to the response
 func HandleErrorInHTTP(resp http.ResponseWriter, err error) {
 	resp.WriteHeader(http.StatusBadRequest)
 
