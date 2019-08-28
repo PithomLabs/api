@@ -72,7 +72,7 @@ func GetSameUsers(userTemplate *User) []User {
 	db := OpenDatabase()
 	defer db.CloseDB()
 
-	db.GDB.Where("email = ? AND username = ?", userTemplate.Email, userTemplate.Username).Find(&users)
+	db.GDB.Where("email = ? OR username = ?", userTemplate.Email, userTemplate.Username).Find(&users)
 
 	return users
 }
@@ -84,12 +84,7 @@ func IsUserValid(user *User) bool {
 	// If the slice lengthy is > 0
 	// Then there is already a user that have
 	// the same email adress or the same username
-	if len(users) > 0 {
-		return false
-
-	}
-
-	return true
+	return len(users) > 0
 }
 
 // AddUserToDB add a given user to gorm opened database

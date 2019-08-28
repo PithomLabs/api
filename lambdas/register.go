@@ -9,7 +9,7 @@ import (
 	nu "github.com/komfy/api/pkg/netutils"
 )
 
-const redirectRegURL = "https://komfy.now.sh/"
+const redirectRegURL = "https://komfy.now.sh/verify_email"
 
 // RegisterHandler handle the /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
