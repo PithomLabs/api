@@ -84,7 +84,7 @@ func IsUserValid(user *User) bool {
 	// If the slice lengthy is > 0
 	// Then there is already a user that have
 	// the same email adress or the same username
-	return len(users) > 0
+	return !(len(users) > 0)
 }
 
 // AddUserToDB add a given user to gorm opened database
