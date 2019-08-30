@@ -8,7 +8,6 @@ import (
 	"time"
 
 	rd "github.com/komfy/api/pkg/dictutils"
-	nu "github.com/komfy/api/pkg/netutils"
 )
 
 // Max password length (the password can actually be more than this number)
@@ -16,7 +15,6 @@ const maxPassLen int = 20
 
 // RandDictHandler corresponds to the "/rand_dict" endpoints
 func RandDictHandler(resp http.ResponseWriter, request *http.Request) {
-	nu.EnableCORS(&resp)
 	// Change the rand seed every time we asked for a password
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := rd.CreateWordsSlice()
