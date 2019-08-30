@@ -6,14 +6,12 @@ import (
 	"strings"
 
 	"github.com/komfy/api/pkg/auth"
-	nu "github.com/komfy/api/pkg/netutils"
 )
 
 const redirectRegURL = "https://komfy.now.sh/verify_email"
 
 // RegisterHandler handle the /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
-	nu.EnableCORS(&resp)
 	if req.Method == http.MethodPost {
 		// We collect the header Content-Type
 		content, ok := req.Header["Content-Type"]

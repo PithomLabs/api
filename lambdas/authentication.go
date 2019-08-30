@@ -7,14 +7,12 @@ import (
 	"strings"
 
 	"github.com/komfy/api/pkg/auth"
-	nu "github.com/komfy/api/pkg/netutils"
 )
 
 const redirectAuthURL = "https://komfy.now.sh/set_cookie?token=%s"
 
 // AuthenticationHandler handle the /auth endpoint
 func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
-	nu.EnableCORS(&resp)
 	// We only accept POST request
 	if req.Method == http.MethodPost {
 		// Create the jwt-token variable

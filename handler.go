@@ -5,10 +5,14 @@ import (
 
 	"github.com/komfy/api/lambdas"
 	"github.com/komfy/api/pkg/captcha"
+	nu "github.com/komfy/api/pkg/netutils"
 )
 
 // MainHandler works as a ServerMux, just in a simpler way
 func MainHandler(resp http.ResponseWriter, req *http.Request) {
+	// Enable Cross-Origin
+	nu.EnableCORS(&resp)
+
 	if !captcha.IsInitialize {
 		captcha.InitializeMemoryStorage()
 
