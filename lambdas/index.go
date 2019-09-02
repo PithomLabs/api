@@ -1,54 +1,39 @@
 package lambdas
 
 import (
-	// Go's packages
-	"encoding/json"
 	"fmt"
 	"net/http"
-
-	// Community's packages
-	"github.com/graphql-go/graphql"
 )
 
 // IndexHandler corresponds to the "/" endpoints
 func IndexHandler(resp http.ResponseWriter, req *http.Request) {
 	// Creating a Schema
-	graphqlFields := graphql.Fields{
-		"hello": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				return "world", nil
-			},
-		},
+
+	resp.Header().Set("Content-Type", "text/html")
+
+	fmt.Fprint(resp, `
+	<style>
+	html, body {
+		height: 100%;
+		margin: 0
 	}
-
-	newQuery := graphql.ObjectConfig{
-		Name:   "MainQuery",
-		Fields: graphqlFields,
+	body {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column
 	}
-
-	schema, _err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: graphql.NewObject(newQuery),
-	})
-	if _err != nil {
-		fmt.Fprintf(resp, "Unable to create the default schema: %v", _err)
+	h1 {
+		font-size: calc(4vw + 2em)
 	}
+	</style>
+	<h1>Komfy API root page.</h1>
 
-	query := `{
-    hello
-  }`
+	<h2>Docs: coming soon</h2>
 
-	params := graphql.Params{
-		Schema:        schema,
-		RequestString: query,
-	}
+	<h2>Komfy homepage: <a href="https://komfy.now.sh">here</a></h2>
 
-	response := graphql.Do(params)
-	responseJSON, _err := json.Marshal(response)
-	if _err != nil {
-		fmt.Fprintf(resp, "Unable to marshal the graphql response")
-	}
-
-	fmt.Fprintf(resp, "%s", responseJSON)
+	<h2>Github repo: <a href="https://github.com/komfy/api">here</a></h2>
+	`)
 
 }
