@@ -6,6 +6,6 @@ import "net/http"
 // in order to allow the current handler to receive
 // Cross-Origin-Ressources-Sharing
 func EnableCORS(resp *http.ResponseWriter) {
-	(*resp).Header().Set("Access-Control-Allow-Origin", "*")
+	(*resp).Header().Set("Access-Control-Allow-Origin", "https://komfy.now.sh/")
 
 }

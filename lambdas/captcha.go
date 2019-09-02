@@ -17,6 +17,14 @@ func GetCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 
 // VerifyCaptchaHandler is the handler function for captcha verification
 func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
+	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha-ID")
+
+	if req.Method == "OPTIONS" {
+		return
+
+	}
+
 	id := req.Header.Get("X-Captcha-ID")
 	digits := req.URL.Query().Get("digits")
 
