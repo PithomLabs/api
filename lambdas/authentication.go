@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/komfy/api/pkg/auth"
+	err "github.com/komfy/api/pkg/error"
 )
 
 const redirectAuthURL = "https://komfy.now.sh/set_cookie?token=%s"
@@ -23,8 +24,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		// We are going to parse the information
 		// Using different functions
 		if !ok {
-			resp.WriteHeader(http.StatusBadRequest)
-			resp.Write([]byte("The multipart/form-data doesn't have a boundary"))
+			err.HandleErrorInHTTP(resp, err.ErrContentTypeMissing)
 			log.Println("Content-Type header is missing")
 			return
 
@@ -32,9 +32,10 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 			// Parse the form values
 			req.ParseForm()
 
-			formToken, err := auth.AuthenticateWithForm(resp, req.PostForm)
-			if err != nil {
-				log.Println(err)
+			formToken, authErr := auth.AuthenticateWithForm(resp, req.PostForm)
+			if authErr != nil {
+				err.HandleErrorInHTTP(resp, authErr)
+				log.Println(authErr)
 				return
 			}
 
@@ -44,9 +45,10 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		} else if content[0] == "application/json" {
 			// Use the post form body,
 			// Which should be a json object
-			jsonToken, err := auth.AuthenticateWithJSON(resp, req.Body)
-			if err != nil {
-				log.Println(err)
+			jsonToken, authErr := auth.AuthenticateWithJSON(resp, req.Body)
+			if authErr != nil {
+				err.HandleErrorInHTTP(resp, authErr)
+				log.Println(authErr)
 				return
 
 			}
@@ -56,8 +58,7 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		} else if content = strings.Split(content[0], ";"); content[0] == "multipart/form-data" {
 			ferr := req.ParseMultipartForm(0)
 			if ferr != nil {
-				resp.WriteHeader(http.StatusBadRequest)
-				resp.Write([]byte("The multipart/form-data doesn't have a boundary"))
+				err.HandleErrorInHTTP(resp, err.ErrMultipartFormData)
 				log.Println(ferr)
 				return
 
@@ -65,9 +66,10 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 
 			formData := req.Form
 
-			dataToken, err := auth.AuthenticateWithFormData(resp, formData)
-			if err != nil {
-				log.Println(err)
+			dataToken, authErr := auth.AuthenticateWithFormData(resp, formData)
+			if authErr != nil {
+				err.HandleErrorInHTTP(resp, authErr)
+				log.Println(authErr)
 				return
 
 			}
@@ -81,7 +83,6 @@ func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
 		http.Redirect(resp, req, realTokenURL, http.StatusSeeOther)
 
 	} else {
-		// Write an error message when request isn't post
 		resp.WriteHeader(http.StatusMethodNotAllowed)
 		resp.Write([]byte("Bad request method"))
 

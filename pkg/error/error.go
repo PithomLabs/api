@@ -14,6 +14,8 @@ var (
 	ErrUserNotValid = errors.New("those credentials are already used")
 	// ErrBadPassword is used in auth.go
 	ErrBadPassword = errors.New("given password does not match with db")
+	// ErrUserIsntCheck is used in auth.go
+	ErrUserIsntCheck = errors.New("the given user has not check is email address")
 	// ErrHashing is used in reg.go
 	ErrHashing = errors.New("An error occured while trying to hash password")
 	// ErrUserAlreadyChecked is used in verify.go
@@ -28,6 +30,10 @@ var (
 	ErrCaptchaHeaderMissing = errors.New("the X-Captcha-ID header is missing")
 	// ErrDigitsMissing is used in captcha.go
 	ErrDigitsMissing = errors.New("digits are missing")
+	// ErrContentTypeMissing is used inside authentication.go
+	ErrContentTypeMissing = errors.New("content-type header is missing")
+	// ErrMultipartFormData is used inside authentication.go
+	ErrMultipartFormData = errors.New("the multipart/form-data doesn't have a boundary")
 )
 
 // HandleErrorInHTTP is used in order to write messages

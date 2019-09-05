@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -47,16 +48,19 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
 		}
-		err.HandleErrorInHTTP(resp, err.CreateError(errorMessage))
-		return "", err.ErrValueMissing
+		return "", err.CreateError(errorMessage)
 	}
 
 	dbUser := db.AskUserByUsername(username[0])
 
+	if !dbUser.Checked {
+		return "", err.ErrUserIsntCheck
+	}
+
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password[0]))
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, err.ErrBadPassword)
-		return "", compareError
+		log.Print(compareError)
+		return "", err.ErrBadPassword
 
 	}
 
@@ -90,6 +94,10 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 
 	dbUser := db.AskUserByUsername(user.Username)
 
+	if !dbUser.Checked {
+		return "", err.ErrUserIsntCheck
+	}
+
 	// If compareError == nil
 	// Then both password are the same
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
@@ -97,8 +105,8 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 	user.Password = ""
 
 	if compareError != nil {
-		err.HandleErrorInHTTP(resp, err.ErrBadPassword)
-		return "", compareError
+		log.Print(compareError)
+		return "", err.ErrBadPassword
 
 	}
 
