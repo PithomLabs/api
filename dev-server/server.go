@@ -9,6 +9,7 @@ import (
 
 	"github.com/komfy/api/lambdas"
 	"github.com/komfy/api/pkg/captcha"
+	nu "github.com/komfy/api/pkg/netutils"
 )
 
 func main() {
@@ -23,14 +24,50 @@ func main() {
 	}
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
-	http.HandleFunc("/", lambdas.IndexHandler)
-	http.HandleFunc("/rand", lambdas.RandHandler)
-	http.HandleFunc("/rand_dict", lambdas.RandDictHandler)
-	http.HandleFunc("/reg", lambdas.RegisterHandler)
-	http.HandleFunc("/auth", lambdas.AuthenticationHandler)
-	http.HandleFunc("/captcha/get", lambdas.GetCaptchaHandler)
-	http.HandleFunc("/captcha/verify", lambdas.VerifyCaptchaHandler)
-	http.HandleFunc("/graphql", lambdas.GraphQLHandler)
+
+	http.HandleFunc("/", AddCORSOnLocal)
+	http.HandleFunc("/rand", AddCORSOnLocal)
+	http.HandleFunc("/rand_dict", AddCORSOnLocal)
+	http.HandleFunc("/reg", AddCORSOnLocal)
+	http.HandleFunc("/auth", AddCORSOnLocal)
+	http.HandleFunc("/captcha/get", AddCORSOnLocal)
+	http.HandleFunc("/captcha/verify", AddCORSOnLocal)
+	http.HandleFunc("/graphql", AddCORSOnLocal)
 	http.ListenAndServe(":8080", nil)
 
+}
+
+// AddCORSOnLocal enable CORS request from localhost:3000 when doing local development
+func AddCORSOnLocal(resp http.ResponseWriter, req *http.Request) {
+	nu.EnableCORS(&resp, "http://localhost:3000")
+
+	switch req.URL.Path {
+	case "/":
+		lambdas.IndexHandler(resp, req)
+
+	case "/rand":
+		lambdas.RandHandler(resp, req)
+
+	case "/rand_dict":
+		lambdas.RandDictHandler(resp, req)
+
+	case "/reg":
+		lambdas.RegisterHandler(resp, req)
+
+	case "/auth":
+		lambdas.AuthenticationHandler(resp, req)
+
+	case "/verify":
+		lambdas.VerifyHandler(resp, req)
+
+	case "/graphql":
+		lambdas.GraphQLHandler(resp, req)
+
+	case "/captcha/get":
+		lambdas.GetCaptchaHandler(resp, req)
+
+	case "/captcha/verify":
+		lambdas.VerifyCaptchaHandler(resp, req)
+
+	}
 }

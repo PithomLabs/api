@@ -11,7 +11,7 @@ import (
 // MainHandler works as a ServerMux, just in a simpler way
 func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	// Enable Cross-Origin
-	nu.EnableCORS(&resp)
+	nu.EnableCORS(&resp, "https://komfy.now.sh")
 
 	if !captcha.IsInitialize {
 		captcha.InitializeMemoryStorage()
