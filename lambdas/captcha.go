@@ -33,7 +33,8 @@ func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 			resp.Write([]byte("Captcha has been solved"))
 
 		} else {
-			resp.Write([]byte("Captcha has not been solved, try again with another one"))
+		       err.HandleErrorInHTTP(resp, err.ErrCaptchaInvalid)
+                       log.Print(err.ErrCaptchaInvalid.Error())
 
 		}
 
