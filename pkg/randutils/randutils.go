@@ -18,8 +18,7 @@ const (
 	seqxByte = 1<<seqByte - 1
 )
 
-// GeneratePassword: It's the function that is used inside 
-// The Handler function from rand.go
+// GeneratePassword return a password randomly generated
 func GeneratePassword() string {
 	// Change the seed for random purpose
 	rand.Seed(time.Now().UnixNano())

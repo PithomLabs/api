@@ -23,8 +23,10 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
+				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+
 				// Check token, it must be valid in order to use the graphql queries
-				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				_, err := jwt.IsTokenValid(contextProvider.Token)
 				if err != nil {
 					return nil, err
 
@@ -32,13 +34,13 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 
 				id, ok := parameters.Args["userid"].(int)
 				if !ok {
-					log.Fatal("userid should be an integer")
+					log.Print("userid should be an integer")
 					return nil, nil
 				}
 
 				// Get the user from the ID
 				strID := fmt.Sprintf("%v", id)
-				user := db.AskUserByID(strID)
+				user := contextProvider.Database.AskUserByID(strID)
 
 				if user.Username == "" {
 					return nil, nil
@@ -55,6 +57,8 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
+				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+
 				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
 				if err != nil {
 					return nil, err
@@ -63,12 +67,12 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 
 				id, ok := parameters.Args["postid"].(int)
 				if !ok {
-					log.Fatal("postid should be a integer.")
+					log.Print("postid should be a integer.")
 
 				}
 				strID := fmt.Sprintf("%v", id)
 
-				post := db.AskPostByID(strID)
+				post := contextProvider.Database.AskPostByID(strID)
 				if post.PostID == 0 {
 					return nil, nil
 
@@ -112,7 +116,9 @@ var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+
+				_, err := jwt.IsTokenValid(contextProvider.Token)
 				if err != nil {
 					return nil, err
 
@@ -155,7 +161,9 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 		"user": &graphql.Field{
 			Type: basicUserGQL,
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
+				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+
+				_, err := jwt.IsTokenValid(contextProvider.Token)
 				if err != nil {
 					return nil, err
 
@@ -166,7 +174,7 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 				id := this.UserID
 				strID := fmt.Sprintf("%v", id)
 
-				user := db.AskUserByID(strID)
+				user := contextProvider.Database.AskUserByID(strID)
 				if user.Username == "" {
 					return nil, nil
 

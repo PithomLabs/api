@@ -21,7 +21,7 @@ type DB struct {
 func OpenDatabase() *DB {
 	db, dbError := gorm.Open("postgres", os.Getenv("database"))
 	if dbError != nil {
-		log.Fatal(dbError)
+		log.Print(dbError)
 		return nil
 
 	}
@@ -36,15 +36,12 @@ func OpenDatabase() *DB {
 func (db *DB) CloseDB() {
 	err := db.GDB.Close()
 	if err != nil {
-		log.Fatal("Database as encountered a problem")
+		log.Print("Database as encountered a problem")
 	}
 }
 
 // AskUserByID returns the user corresponding to the given ID
-func AskUserByID(id string) *User {
-	db := OpenDatabase()
-	defer db.CloseDB()
-
+func (db *DB) AskUserByID(id string) *User {
 	user := &User{}
 	db.GDB.First(&user, "user_id = ?", id)
 
@@ -53,10 +50,7 @@ func AskUserByID(id string) *User {
 
 // AskUserByUsername return the first user (and only one)
 // that correspond to the given username
-func AskUserByUsername(username string) *User {
-	db := OpenDatabase()
-	defer db.CloseDB()
-
+func (db *DB) AskUserByUsername(username string) *User {
 	user := &User{}
 	db.GDB.First(&user, "username = ?", username)
 
@@ -67,10 +61,8 @@ func AskUserByUsername(username string) *User {
 // GetSameUsers returns a slice which contain
 // All the db users that have a field identical to
 // The template user
-func GetSameUsers(userTemplate *User) []User {
+func (db *DB) GetSameUsers(userTemplate *User) []User {
 	users := []User{}
-	db := OpenDatabase()
-	defer db.CloseDB()
 
 	db.GDB.Where("email = ? OR username = ?", userTemplate.Email, userTemplate.Username).Find(&users)
 
@@ -78,8 +70,8 @@ func GetSameUsers(userTemplate *User) []User {
 }
 
 // IsUserValid check if a user is valid and not a duplicate
-func IsUserValid(user *User) bool {
-	users := GetSameUsers(user)
+func (db *DB) IsUserValid(user *User) bool {
+	users := db.GetSameUsers(user)
 
 	// If the slice lengthy is > 0
 	// Then there is already a user that have
@@ -88,28 +80,21 @@ func IsUserValid(user *User) bool {
 }
 
 // AddUserToDB add a given user to gorm opened database
-func AddUserToDB(user *User) {
-	db := OpenDatabase()
-	defer db.CloseDB()
-
+func (db *DB) AddUserToDB(user *User) {
 	db.GDB.Create(&user)
 
 }
 
 // UpdateCheckValue change the check value and allow
 // the user to authenticate to komfy
-func UpdateCheckValue(user *User) {
-	db := OpenDatabase()
-	defer db.CloseDB()
-
+func (db *DB) UpdateCheckValue(user *User) {
 	db.GDB.Model(&user).Update("Checked", true)
+
 }
 
 // AskPostByID return a post given an id
-func AskPostByID(id string) *Post {
+func (db *DB) AskPostByID(id string) *Post {
 	post := &Post{}
-	db := OpenDatabase()
-	defer db.CloseDB()
 
 	db.GDB.Where("post_id = ?", id).First(&post)
 

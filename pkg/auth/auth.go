@@ -51,31 +51,22 @@ func AuthenticateWithForm(resp http.ResponseWriter, values url.Values) (string, 
 		return "", err.CreateError(errorMessage)
 	}
 
-	dbUser := db.AskUserByUsername(username[0])
-
-	if !dbUser.Checked {
-		return "", err.ErrUserIsntCheck
+	user := &db.User{
+		Username: username[0],
+		Password: password[0],
 	}
 
-	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password[0]))
-	if compareError != nil {
-		log.Print(compareError)
-		return "", err.ErrBadPassword
+	return CheckUserAndCreateJWTToken(user)
 
-	}
-
-	token := jwt.CreateToken(dbUser)
-
-	return token, nil
 }
 
 // AuthenticateWithJSON is used in order to
 // authenticate user based on a json object
 func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (string, error) {
 	// Create an empty User object
-	user := db.User{}
+	user := &db.User{}
 	// Decode the json object into the user
-	json.NewDecoder(jsonBody).Decode(&user)
+	json.NewDecoder(jsonBody).Decode(user)
 
 	// Check for credentials
 	if valueMissing := !(user.Username != "" && user.Email != "" && user.Password != ""); valueMissing {
@@ -92,23 +83,28 @@ func AuthenticateWithJSON(resp http.ResponseWriter, jsonBody io.ReadCloser) (str
 		return "", err.ErrValueMissing
 	}
 
-	dbUser := db.AskUserByUsername(user.Username)
+	return CheckUserAndCreateJWTToken(user)
+}
+
+// CheckUserAndCreateJWTToken verify that the current user has its email checked
+// and then create a jwt token
+func CheckUserAndCreateJWTToken(user *db.User) (string, error) {
+	database := db.OpenDatabase()
+	defer database.CloseDB()
+
+	dbUser := database.AskUserByUsername(user.Username)
 
 	if !dbUser.Checked {
 		return "", err.ErrUserIsntCheck
 	}
 
-	// If compareError == nil
-	// Then both password are the same
 	compareError := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
-	// Delete the password from memory
-	user.Password = ""
-
 	if compareError != nil {
 		log.Print(compareError)
 		return "", err.ErrBadPassword
-
 	}
+
+	user.Password = ""
 
 	token := jwt.CreateToken(dbUser)
 
