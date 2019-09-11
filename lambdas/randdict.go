@@ -19,7 +19,7 @@ func RandDictHandler(resp http.ResponseWriter, request *http.Request) {
 	rand.Seed(time.Now().UnixNano())
 	words, wordsLen, err := rd.CreateWordsSlice()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 
 	}
 

@@ -7,14 +7,17 @@ import (
 
 // VerifyUser use the code in order to verify a user
 func VerifyUser(code string) error {
-	user := db.AskUserByID(code)
+	database := db.OpenDatabase()
+	defer database.CloseDB()
+
+	user := database.AskUserByID(code)
 
 	if user.Checked {
 		return err.ErrUserAlreadyChecked
 
 	}
 
-	db.UpdateCheckValue(user)
+	database.UpdateCheckValue(user)
 
 	return nil
 }

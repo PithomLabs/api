@@ -37,7 +37,7 @@ func SendMail(user *db.User) {
 		[]byte(msg))
 
 	if mailError != nil {
-		log.Fatal(mailError)
+		log.Print(mailError)
 
 	}
 }

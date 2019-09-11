@@ -76,21 +76,7 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 	// Deleting the password from the hashedPass variable
 	hashedPass = []byte("")
 
-	// We are checking if the user isn't a duplicate of another one
-	// If not...
-	if db.IsUserValid(user) {
-		// ...we add this user to database
-		// And send him a verification email
-		db.AddUserToDB(user)
-		mail.SendMail(user)
-
-	} else {
-		err.HandleErrorInHTTP(resp, err.ErrUserNotValid)
-		return err.ErrUserNotValid
-
-	}
-
-	return nil
+	return VerifyUserAndSendMail(user)
 
 }
 
@@ -130,16 +116,23 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	user.Password = string(hashedPassword)
 	hashedPassword = []byte("")
 
-	if db.IsUserValid(user) {
-		db.AddUserToDB(user)
+	return VerifyUserAndSendMail(user)
+
+}
+
+// VerifyUserAndSendMail is used in order to verify that
+// the user is valid and if so,
+// send a mail to the given user's email
+func VerifyUserAndSendMail(user *db.User) error {
+	database := db.OpenDatabase()
+	defer database.CloseDB()
+
+	if database.IsUserValid(user) {
+		database.AddUserToDB(user)
 		mail.SendMail(user)
 
-	} else {
-		err.HandleErrorInHTTP(resp, err.ErrUserNotValid)
-		return err.ErrUserNotValid
+		return nil
 
 	}
-
-	return nil
-
+	return err.ErrUserNotValid
 }

@@ -19,7 +19,7 @@ func CreateToken(user *db.User) string {
 
 	strToken, err := token.SignedString([]byte(os.Getenv("secret")))
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 
 	}
 
