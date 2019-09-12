@@ -13,6 +13,13 @@ const redirectRegURL = "https://komfy.now.sh/verify_email"
 
 // RegisterHandler handle the /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
+	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha")
+
+	if req.Method == "OPTIONS" {
+		return
+	}
+
 	if req.Method == http.MethodPost {
 		// We first check if the captcha is right
 		captchaInfos := req.Header["X-Captcha"]
