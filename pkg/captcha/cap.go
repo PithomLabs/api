@@ -3,6 +3,7 @@ package captcha
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dchest/captcha"
@@ -40,8 +41,8 @@ func CreateCaptchaAndShow(resp http.ResponseWriter) {
 }
 
 // VerifyCaptcha verify if a captcha is valid
-func VerifyCaptcha(id string, digits string) bool {
-	storedDigits := store.Get(id, true)
+func VerifyCaptcha(id string, digits string, delete bool) bool {
+	storedDigits := store.Get(id, delete)
 
 	storedString := fromByteToString(storedDigits)
 
@@ -61,4 +62,12 @@ func fromByteToString(b []byte) string {
 	}
 
 	return str[:len(str)-1]
+}
+
+// DoubleCheck returns a bool after verifying for the second time that
+// The captcha has been well solved
+func DoubleCheck(xCaptcha string) bool {
+	parts := strings.Split(xCaptcha, ":")
+
+	return VerifyCaptcha(parts[0], parts[1], true)
 }

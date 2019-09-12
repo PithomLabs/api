@@ -76,7 +76,7 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 	// Deleting the password from the hashedPass variable
 	hashedPass = []byte("")
 
-	return VerifyUserAndSendMail(user)
+	return verifyUserAndSendMail(user)
 
 }
 
@@ -116,14 +116,14 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	user.Password = string(hashedPassword)
 	hashedPassword = []byte("")
 
-	return VerifyUserAndSendMail(user)
+	return verifyUserAndSendMail(user)
 
 }
 
 // VerifyUserAndSendMail is used in order to verify that
 // the user is valid and if so,
 // send a mail to the given user's email
-func VerifyUserAndSendMail(user *db.User) error {
+func verifyUserAndSendMail(user *db.User) error {
 	database := db.OpenDatabase()
 	defer database.CloseDB()
 

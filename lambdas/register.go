@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/komfy/api/pkg/auth"
+	"github.com/komfy/api/pkg/captcha"
 )
 
 const redirectRegURL = "https://komfy.now.sh/verify_email"
@@ -13,7 +14,17 @@ const redirectRegURL = "https://komfy.now.sh/verify_email"
 // RegisterHandler handle the /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodPost {
-		// We collect the header Content-Type
+		// We first check if the captcha is right
+		captchaInfos := req.Header["X-Captcha"]
+
+		if !captcha.DoubleCheck(captchaInfos[0]) {
+			resp.WriteHeader(http.StatusBadRequest)
+			resp.Write([]byte("double check error"))
+			log.Print("double check error")
+			return
+		}
+
+		// Then we collect the header Content-Type
 		content, ok := req.Header["Content-Type"]
 		// Based on the content-type header value,
 		// Use different type of registration
