@@ -28,6 +28,7 @@ func InitializeMemoryStorage() {
 
 // CreateCaptchaAndShow create a captcha and load it to the /captcha endpoint
 func CreateCaptchaAndShow(resp http.ResponseWriter) {
+	// Authorize komfy.now.sh to access the X-Captcha-ID value
 	resp.Header().Set("Access-Control-Expose-Headers", "X-Captcha-ID")
 	// Create a new captcha and store it
 	id := captcha.New()
@@ -58,7 +59,7 @@ func fromByteToString(b []byte) string {
 
 	var str string
 	for _, v := range b {
-		str += fmt.Sprintf("%v,", v)
+		str += fmt.Sprintf("%v", v)
 
 	}
 
