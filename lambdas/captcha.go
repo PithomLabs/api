@@ -29,12 +29,12 @@ func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 	digits := req.URL.Query().Get("digits")
 
 	if id != "" && digits != "" {
-		if captcha.VerifyCaptcha(id, digits) {
+		if captcha.VerifyCaptcha(id, digits, false) {
 			resp.Write([]byte("Captcha has been solved"))
 
 		} else {
-		       err.HandleErrorInHTTP(resp, err.ErrCaptchaInvalid)
-                       log.Print(err.ErrCaptchaInvalid.Error())
+			err.HandleErrorInHTTP(resp, err.ErrCaptchaInvalid)
+			log.Print(err.ErrCaptchaInvalid.Error())
 
 		}
 

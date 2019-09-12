@@ -30,8 +30,8 @@ var (
 	ErrCaptchaHeaderMissing = errors.New("the X-Captcha-ID header is missing")
 	// ErrDigitsMissing is used in captcha.go
 	ErrDigitsMissing = errors.New("digits are missing")
-        // ErrCaptchaInvalid is used in captcha.go
-        ErrCaptchaInvalid = errors.New("captcha is invalid, try again") 
+	// ErrCaptchaInvalid is used in captcha.go
+	ErrCaptchaInvalid = errors.New("captcha is invalid, try again")
 	// ErrContentTypeMissing is used inside authentication.go
 	ErrContentTypeMissing = errors.New("content-type header is missing")
 	// ErrMultipartFormData is used inside authentication.go
