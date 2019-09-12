@@ -19,7 +19,6 @@ func GetCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha-ID")
-	resp.Header().Set("Access-Control-Expose-Headers", "X-Captcha-ID")
 
 	if req.Method == "OPTIONS" {
 		return

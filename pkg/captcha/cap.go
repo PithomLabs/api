@@ -28,6 +28,7 @@ func InitializeMemoryStorage() {
 
 // CreateCaptchaAndShow create a captcha and load it to the /captcha endpoint
 func CreateCaptchaAndShow(resp http.ResponseWriter) {
+	resp.Header().Set("Access-Control-Expose-Headers", "X-Captcha-ID")
 	// Create a new captcha and store it
 	id := captcha.New()
 	// Get digits based on the captcha id
