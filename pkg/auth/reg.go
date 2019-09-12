@@ -33,26 +33,26 @@ func CreateNewUserWithFormData(resp http.ResponseWriter, formValue map[string][]
 
 // CreateNewUserWithForm creates a new user based on the form urlencoded values
 func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) error {
-	// Check if we have a password
-	password, passExist := formValues["password"]
 	// Check if we have an username
 	username, userExist := formValues["username"]
 	// Check if we have an email
 	email, emailExist := formValues["email"]
+	// Check if we have a password
+	password, passExist := formValues["password"]
 
 	// If either the password or the username is missing
 	// Returns an error
 	if valueMissing := !(passExist && userExist && emailExist); valueMissing {
 		var errorMessage string
 
-		if !(passExist && password[0] == "") {
-			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
-
-		} else if !(userExist && username[0] != "") {
+		if !(userExist && username[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
 		} else if !(emailExist && email[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "email")
+
+		} else if !(passExist && password[0] == "") {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
 		}
 

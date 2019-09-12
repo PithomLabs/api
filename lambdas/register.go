@@ -1,6 +1,7 @@
 package lambdas
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -46,6 +47,7 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 			// Into the variable req.Form and req.PostForm
 			req.ParseForm()
 			// We create the user based on the PostForm variable
+			fmt.Println(req.PostForm)
 			err := auth.CreateNewUserWithForm(resp, req.PostForm)
 			if err != nil {
 				log.Println(err)

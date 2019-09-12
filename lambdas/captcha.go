@@ -1,6 +1,7 @@
 package lambdas
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -11,7 +12,10 @@ import (
 // GetCaptchaHandler is the handler function for captcha generation
 // And image representation of it
 func GetCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
-	captcha.CreateCaptchaAndShow(resp)
+	id, digits := captcha.CreateCaptchaAndShow(resp)
+
+	log.Printf("Captcha ID: %s", id)
+	log.Printf("  > Digits: %v", digits)
 
 }
 
@@ -19,6 +23,8 @@ func GetCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha-ID")
+
+	fmt.Println(req.Method)
 
 	if req.Method == "OPTIONS" {
 		return

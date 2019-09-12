@@ -7,7 +7,7 @@ import (
 
 var (
 	// ErrValueMissing is used inside reg.go and auth.go
-	ErrValueMissing = errors.New("value is missing")
+	ErrValueMissing = errors.New("a value is missing from the request data")
 	// ErrValueMissingTemplate is used inside reg.go and auth.go
 	ErrValueMissingTemplate = "sorry but you forgot ur %s"
 	// ErrUserNotValid is used in reg.go and auth.go

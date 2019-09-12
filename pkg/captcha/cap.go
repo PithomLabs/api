@@ -27,7 +27,7 @@ func InitializeMemoryStorage() {
 }
 
 // CreateCaptchaAndShow create a captcha and load it to the /captcha endpoint
-func CreateCaptchaAndShow(resp http.ResponseWriter) {
+func CreateCaptchaAndShow(resp http.ResponseWriter) (string, []byte) {
 	// Authorize komfy.now.sh to access the X-Captcha-ID value
 	resp.Header().Set("Access-Control-Expose-Headers", "X-Captcha-ID")
 	// Create a new captcha and store it
@@ -39,6 +39,9 @@ func CreateCaptchaAndShow(resp http.ResponseWriter) {
 
 	resp.Header().Set("X-Captcha-ID", id)
 	image.WriteTo(resp)
+
+	// Return the captcha infos for log
+	return id, digits
 
 }
 
@@ -53,17 +56,13 @@ func VerifyCaptcha(id string, digits string, delete bool) bool {
 }
 
 func fromByteToString(b []byte) string {
-	if len(b) == 0 {
-		return ""
-	}
-
 	var str string
 	for _, v := range b {
 		str += fmt.Sprintf("%v", v)
 
 	}
 
-	return str[:len(str)-1]
+	return str
 }
 
 // DoubleCheck returns a bool after verifying for the second time that
