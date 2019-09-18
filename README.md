@@ -8,8 +8,8 @@ Komfy API built with Go, GraphQL, PostgreSQL and GORM.
 
 ## Useful links
 
-[GraphQL API Prototype](https://app.graphqleditor.com/komfy/komfy-api)
-[API Homepage](https://api.komfy.now.sh/)
+* [GraphQL API Prototype](https://app.graphqleditor.com/komfy/komfy-api)
+* [API Homepage](https://api.komfy.now.sh/)
 
 ## Local setup
 
