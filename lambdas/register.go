@@ -1,7 +1,6 @@
 package lambdas
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -14,22 +13,27 @@ const redirectRegURL = "https://komfy.now.sh/verify_email"
 
 // RegisterHandler handle the /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
-	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	/*resp.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha")
 
-	if req.Method == "OPTIONS" {
+	if req.Method == http.MethodOptions {
 		return
-	}
+	}*/
 
 	if req.Method == http.MethodPost {
 		// We first check if the captcha is right
-		captchaInfos := req.Header["X-Captcha"]
+		captchaInfos, ok := req.Header["X-Captcha"]
 
-		if !captcha.DoubleCheck(captchaInfos[0]) {
-			resp.WriteHeader(http.StatusBadRequest)
-			resp.Write([]byte("double check error"))
-			log.Print("double check error")
+		if ok {
+			if !captcha.DoubleCheck(captchaInfos[0]) {
+				resp.WriteHeader(http.StatusBadRequest)
+				resp.Write([]byte("double check error"))
+				log.Print("double check error")
+				return
+			}
+		} else {
 			return
+
 		}
 
 		// Then we collect the header Content-Type
@@ -47,7 +51,6 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 			// Into the variable req.Form and req.PostForm
 			req.ParseForm()
 			// We create the user based on the PostForm variable
-			fmt.Println(req.PostForm)
 			err := auth.CreateNewUserWithForm(resp, req.PostForm)
 			if err != nil {
 				log.Println(err)
