@@ -19,7 +19,7 @@ func SendMail(user *db.User) {
 	msg.SetHeader("From", from)
 	msg.SetHeader("To", user.Email)
 	msg.SetHeader("Subject", "Komfy email verification")
-	msg.SetBody("text/html", "<h1>Komfy email verification</h1> Confirm email by clicking on this <a href='api.komfy.now.sh/verify?verify_code=%s'>link</a>.", user.userID)
+	msg.SetBody("text/html", "<h1>Komfy email verification</h1> Confirm email by clicking on this <a href='api.komfy.now.sh/verify?verify_code=%s'>link</a>.", user.UserID)
 	msg.SetAdressHeader("To", user.Email, user.Username)
 
 	dialer := email.NewDialer("smtp.gmail.com", 587, from, pass)
