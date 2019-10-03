@@ -33,26 +33,26 @@ func CreateNewUserWithFormData(resp http.ResponseWriter, formValue map[string][]
 
 // CreateNewUserWithForm creates a new user based on the form urlencoded values
 func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) error {
-	// Check if we have a password
-	password, passExist := formValues["password"]
 	// Check if we have an username
 	username, userExist := formValues["username"]
 	// Check if we have an email
 	email, emailExist := formValues["email"]
+	// Check if we have a password
+	password, passExist := formValues["password"]
 
 	// If either the password or the username is missing
 	// Returns an error
 	if valueMissing := !(passExist && userExist && emailExist); valueMissing {
 		var errorMessage string
 
-		if !(passExist && password[0] == "") {
-			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
-
-		} else if !(userExist && username[0] != "") {
+		if !(userExist && username[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "username")
 
 		} else if !(emailExist && email[0] != "") {
 			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "email")
+
+		} else if !(passExist && password[0] == "") {
+			errorMessage = fmt.Sprintf(err.ErrValueMissingTemplate, "password")
 
 		}
 
@@ -76,7 +76,7 @@ func CreateNewUserWithForm(resp http.ResponseWriter, formValues url.Values) erro
 	// Deleting the password from the hashedPass variable
 	hashedPass = []byte("")
 
-	return VerifyUserAndSendMail(user)
+	return verifyUserAndSendMail(user)
 
 }
 
@@ -116,14 +116,14 @@ func CreateNewUserWithJSON(resp http.ResponseWriter, requestBody io.ReadCloser) 
 	user.Password = string(hashedPassword)
 	hashedPassword = []byte("")
 
-	return VerifyUserAndSendMail(user)
+	return verifyUserAndSendMail(user)
 
 }
 
 // VerifyUserAndSendMail is used in order to verify that
 // the user is valid and if so,
 // send a mail to the given user's email
-func VerifyUserAndSendMail(user *db.User) error {
+func verifyUserAndSendMail(user *db.User) error {
 	database := db.OpenDatabase()
 	defer database.CloseDB()
 
