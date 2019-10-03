@@ -34,6 +34,8 @@ var (
 	ErrContentTypeMissing = errors.New("content-type header is missing")
 	// ErrMultipartFormData is used inside authentication.go
 	ErrMultipartFormData = errors.New("the multipart/form-data doesn't have a boundary")
+	// ErrContextProvider is used inside gql_resolve_funcs.go
+	ErrContextProvider = errors.New("the context could not been cast as ContextProvider")
 )
 
 // HandleErrorInHTTP is used in order to write messages

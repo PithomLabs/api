@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-// MainSchema is the schema used at /graphql
-var MainSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
+// RootSchema is the schema using the root query
+var RootSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query: rootQuery,
 })

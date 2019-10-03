@@ -16,37 +16,30 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
 		"user": &graphql.Field{
-			Type: userWithPostGQL,
+			Type: user,
 			Args: graphql.FieldConfigArgument{
 				"userid": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+				return generalResolveFunc(parameters, func(context ContextProvider, tokenInfos interface{}) (interface{}, error) {
+					id, ok := parameters.Args["userid"].(int)
+					if !ok {
+						log.Print("userid should be an integer")
+						return nil, nil
+					}
 
-				// Check token, it must be valid in order to use the graphql queries
-				_, err := jwt.IsTokenValid(contextProvider.Token)
-				if err != nil {
-					return nil, err
+					// Get the user from the ID
+					strID := fmt.Sprintf("%v", id)
+					user := context.Database.AskUserByID(strID)
 
-				}
+					if user.Username == "" {
+						return nil, nil
+					}
 
-				id, ok := parameters.Args["userid"].(int)
-				if !ok {
-					log.Print("userid should be an integer")
-					return nil, nil
-				}
-
-				// Get the user from the ID
-				strID := fmt.Sprintf("%v", id)
-				user := contextProvider.Database.AskUserByID(strID)
-
-				if user.Username == "" {
-					return nil, nil
-				}
-
-				return user, nil
+					return user, nil
+				})
 			},
 		},
 		"post": &graphql.Field{
@@ -57,35 +50,30 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+				return generalResolveFunc(parameters, func(context ContextProvider, tokenInfos interface{}) (interface{}, error) {
+					id, ok := parameters.Args["postid"].(int)
+					if !ok {
+						log.Print("postid should be a integer.")
+						return nil, nil
+					}
+					strID := fmt.Sprintf("%v", id)
 
-				_, err := jwt.IsTokenValid(parameters.Context.Value("token").(string))
-				if err != nil {
-					return nil, err
+					post := context.Database.AskPostByID(strID)
+					if post.PostID == 0 {
+						return nil, nil
 
-				}
+					}
 
-				id, ok := parameters.Args["postid"].(int)
-				if !ok {
-					log.Print("postid should be a integer.")
-
-				}
-				strID := fmt.Sprintf("%v", id)
-
-				post := contextProvider.Database.AskPostByID(strID)
-				if post.PostID == 0 {
-					return nil, nil
-
-				}
-
-				return post, nil
+					return post, nil
+				})
 			},
 		},
 	},
 })
 
-// User graphql object
-var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
+// User graphql object with post field and
+// a resolve function
+var user = graphql.NewObject(graphql.ObjectConfig{
 	Name: "User",
 	Fields: graphql.Fields{
 		"userid": &graphql.Field{
@@ -94,11 +82,19 @@ var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
 		"username": &graphql.Field{
 			Type: graphql.String,
 		},
-		"email": &graphql.Field{
-			Type: graphql.String,
-		},
 		"NSFW": &graphql.Field{
 			Type: graphql.Boolean,
+			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
+				// NSFW is a private field, which need authentication
+				return privatiseField(parameters, func(context ContextProvider) (interface{}, error) {
+					sourceUser, ok := parameters.Source.(*db.User)
+					if !ok {
+						return nil, nil
+					}
+
+					return sourceUser.NSFW, nil
+				})
+			},
 		},
 		"avatar": &graphql.Field{
 			Type: graphql.String,
@@ -116,9 +112,12 @@ var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
+				context, cErr := getContext(parameters)
+				if cErr != nil {
+					return nil, cErr
+				}
 
-				_, err := jwt.IsTokenValid(contextProvider.Token)
+				_, err := jwt.IsTokenValid(context.Token)
 				if err != nil {
 					return nil, err
 
@@ -130,6 +129,8 @@ var userWithPostGQL = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+// The basic user which is used inside the post object
+// in order to get post's user infos
 var basicUserGQL = graphql.NewObject(graphql.ObjectConfig{
 	Name: "User",
 	Fields: graphql.Fields{
@@ -137,9 +138,6 @@ var basicUserGQL = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.ID,
 		},
 		"username": &graphql.Field{
-			Type: graphql.String,
-		},
-		"email": &graphql.Field{
 			Type: graphql.String,
 		},
 		"NSFW": &graphql.Field{
@@ -151,7 +149,8 @@ var basicUserGQL = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-// Post graphql object
+// Post graphql object is the object which correspond to
+// a post inside the database
 var postGQL = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Post",
 	Fields: graphql.Fields{
@@ -161,20 +160,16 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 		"user": &graphql.Field{
 			Type: basicUserGQL,
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				contextProvider := parameters.Context.Value("context_provider").(ContextProvider)
-
-				_, err := jwt.IsTokenValid(contextProvider.Token)
-				if err != nil {
-					return nil, err
-
+				context, cErr := getContext(parameters)
+				if cErr != nil {
+					return nil, nil
 				}
 
-				// The variable this represent the current post
-				this := parameters.Source.(*db.Post)
-				id := this.UserID
-				strID := fmt.Sprintf("%v", id)
+				// The variable sourcePost represent the current post
+				sourcePost := parameters.Source.(*db.Post)
+				id := fmt.Sprintf("%v", sourcePost.UserID)
 
-				user := contextProvider.Database.AskUserByID(strID)
+				user := context.Database.AskUserByID(id)
 				if user.Username == "" {
 					return nil, nil
 
@@ -199,9 +194,6 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 })
 
 // Enum content type
-// Don't actually know if this is gonna work
-// Will see when we could do gql request to now
-// :D
 var contentTypeGQL = graphql.NewEnum(graphql.EnumConfig{
 	Name: "contentType",
 	Values: graphql.EnumValueConfigMap{
