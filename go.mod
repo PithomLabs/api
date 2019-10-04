@@ -10,5 +10,5 @@ require (
 	github.com/joho/godotenv v1.3.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )

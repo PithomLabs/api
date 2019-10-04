@@ -18,7 +18,7 @@ var (
 // InitializeMemoryStorage create a new MemoryStorage object
 // uses it as the default one and change the IsInitialize value
 func InitializeMemoryStorage() {
-	IsInitialize = !IsInitialize
+	IsInitialize = true
 
 	memory := captcha.NewMemoryStore(1000, time.Hour*1000000)
 	captcha.SetCustomStore(memory)

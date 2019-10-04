@@ -22,6 +22,7 @@ func main() {
 	if !captcha.IsInitialize {
 		captcha.InitializeMemoryStorage()
 	}
+
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
 
@@ -29,6 +30,7 @@ func main() {
 	http.HandleFunc("/rand", AddCORSOnLocal)
 	http.HandleFunc("/rand_dict", AddCORSOnLocal)
 	http.HandleFunc("/reg", AddCORSOnLocal)
+	http.HandleFunc("/verify", AddCORSOnLocal)
 	http.HandleFunc("/auth", AddCORSOnLocal)
 	http.HandleFunc("/captcha/get", AddCORSOnLocal)
 	http.HandleFunc("/captcha/verify", AddCORSOnLocal)
