@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/komfy/api/lambdas"
-	"github.com/komfy/api/pkg/captcha"
+	//"github.com/komfy/api/pkg/captcha"
 	nu "github.com/komfy/api/pkg/netutils"
 )
 
@@ -19,9 +19,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if !captcha.IsInitialize {
+	/*if !captcha.IsInitialize {
 		captcha.InitializeMemoryStorage()
-	}
+	}*/
 
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")

@@ -12,16 +12,10 @@ import (
 	"github.com/komfy/api/internal/captcha"
 	"github.com/komfy/api/internal/database"
 	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/mail"
+	"github.com/komfy/api/internal/sign"
 	"github.com/komfy/api/internal/structs"
 )
-
-// A simple struct in order to transport information
-// from functions
-type transport struct {
-	User  *structs.User
-	Error error
-	Bool  bool
-}
 
 const (
 	// All the different Content-Type header we are accepting
@@ -33,8 +27,6 @@ const (
 	passwordCost int = 8
 )
 
-// This function will verify a second time
-// if the captcha infos are correct
 func doubleCheck(request *http.Request) error {
 	capInfos, ok := request.Header["X-Captcha"]
 	if !ok {
@@ -49,17 +41,17 @@ func doubleCheck(request *http.Request) error {
 	return nil
 }
 
-func extractUser(request *http.Request, userChan chan<- transport) {
+func extractUser(request *http.Request, userChan chan<- sign.Transport) {
 	content, ok := request.Header["Content-Type"]
 	if !ok {
-		userChan <- createErrorTransport(err.ErrContentTypeMissing)
+		userChan <- sign.CreateErrorTransport(err.ErrContentTypeMissing)
 		return
 	}
 
 	if content[0] == urlencoded {
 		pErr := request.ParseForm()
 		if pErr != nil {
-			userChan <- createErrorTransport(pErr)
+			userChan <- sign.CreateErrorTransport(pErr)
 			return
 		}
 
@@ -71,7 +63,7 @@ func extractUser(request *http.Request, userChan chan<- transport) {
 	} else if content = strings.Split(content[0], ";"); content[0] == "multipart/form-data" {
 		pErr := request.ParseMultipartForm(0)
 		if pErr != nil {
-			userChan <- createErrorTransport(pErr)
+			userChan <- sign.CreateErrorTransport(pErr)
 			return
 		}
 
@@ -80,7 +72,7 @@ func extractUser(request *http.Request, userChan chan<- transport) {
 	}
 }
 
-func parseUrlencoded(values url.Values) transport {
+func parseUrlencoded(values url.Values) sign.Transport {
 	username, uExists := values["username"]
 	password, pExists := values["password"]
 	email, eExists := values["email"]
@@ -96,15 +88,15 @@ func parseUrlencoded(values url.Values) transport {
 		Email:    email[0],
 	}
 
-	return createUserTransport(user)
+	return sign.CreateUserTransport(user)
 
 }
 
-func parseJSON(body io.ReadCloser) transport {
+func parseJSON(body io.ReadCloser) sign.Transport {
 	var user *structs.User
-	dErr := json.NewDecoder(body).Decode(user)
+	dErr := json.NewDecoder(body).Decode(&user)
 	if dErr != nil {
-		return createErrorTransport(dErr)
+		return sign.CreateErrorTransport(dErr)
 
 	}
 
@@ -116,10 +108,10 @@ func parseJSON(body io.ReadCloser) transport {
 
 	}
 
-	return createUserTransport(user)
+	return sign.CreateUserTransport(user)
 }
 
-func parseMultipart(values map[string][]string) transport {
+func parseMultipart(values map[string][]string) sign.Transport {
 	var urlValues url.Values
 	for key, value := range values {
 		if len(value) == 1 {
@@ -130,12 +122,12 @@ func parseMultipart(values map[string][]string) transport {
 	return parseUrlencoded(urlValues)
 }
 
-func isValidUser(db database.KomfyDB, user *structs.User, validChan chan<- transport) {
+func isValidUser(db database.KomfyDB, user *structs.User, validChan chan<- sign.Transport) {
 	valid := db.IsValid(user)
 	if !valid {
-		validChan <- createErrorTransport(err.ErrUserNotValid)
+		validChan <- sign.CreateErrorTransport(err.ErrUserNotValid)
 	}
-	validChan <- createBoolTransport(valid)
+	validChan <- sign.CreateBoolTransport(valid)
 
 }
 
@@ -148,7 +140,7 @@ func hashPassword(pass string) (string, error) {
 	return string(bytePass), nil
 }
 
-func credentialMissing(user, pass, email bool) transport {
+func credentialMissing(user, pass, email bool) sign.Transport {
 	var str string
 	if !user {
 		str += "username,"
@@ -163,28 +155,19 @@ func credentialMissing(user, pass, email bool) transport {
 	customMessage := "those credentials are missing: " + str[:len(str)-1]
 	customError := err.CreateErrorFromString(customMessage)
 
-	return createErrorTransport(customError)
+	return sign.CreateErrorTransport(customError)
 }
 
-// This function create a transport object which have a nil user
-// and an error defined by transportError
-func createErrorTransport(transportError error) transport {
-	return transport{
-		User:  nil,
-		Error: transportError,
+func sendMail(user *structs.User, sendChan chan sign.Transport) {
+	if !mail.IsValid(user.Email) {
+		<-sendChan
+		sendChan <- sign.CreateErrorTransport(err.ErrMailNotValid)
 	}
-}
 
-func createUserTransport(transportUser *structs.User) transport {
-	return transport{
-		User:  transportUser,
-		Error: nil,
+	mErr := mail.Send(user, sendChan)
+	if mErr != nil {
+		sendChan <- sign.CreateErrorTransport(mErr)
 	}
-}
 
-func createBoolTransport(transportBool bool) transport {
-	return transport{
-		Bool:  transportBool,
-		Error: nil,
-	}
+	sendChan <- sign.CreateErrorTransport(nil)
 }

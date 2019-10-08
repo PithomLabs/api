@@ -19,6 +19,8 @@ func Open() (KomfyDB, error) {
 		return KomfyDB{}, dbErr
 	}
 
+	db.DB().SetMaxOpenConns(1)
+
 	return KomfyDB{
 		Instance: db,
 	}, nil
@@ -44,4 +46,12 @@ func (db KomfyDB) FindUsers(username, email string) []structs.User {
 	db.Instance.Where("email = ? OR username = ?", email, username).Find(&users)
 
 	return users
+}
+
+func (db KomfyDB) AddUser(user *structs.User) {
+	db.Instance.Create(user)
+}
+
+func (db KomfyDB) DeleteUser(user *structs.User) {
+	db.Instance.Delete(user, "username = ?", user.Username)
 }

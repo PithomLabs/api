@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/komfy/api/lambdas"
-	"github.com/komfy/api/pkg/captcha"
+	//"github.com/komfy/api/pkg/captcha"
 	nu "github.com/komfy/api/pkg/netutils"
 )
 
@@ -13,10 +13,10 @@ func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	// Enable Cross-Origin
 	nu.EnableCORS(&resp, "https://komfy.now.sh")
 
-	if !captcha.IsInitialize {
+	/*if !captcha.IsInitialize {
 		captcha.InitializeMemoryStorage()
 
-	}
+	}*/
 
 	path := req.URL.Path
 
