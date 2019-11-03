@@ -5,12 +5,12 @@ import (
 
 	"encoding/json"
 
-	"github.com/komfy/api/pkg/gql"
+	"github.com/komfy/api/internal/graphql"
 )
 
 // GraphQLHandler handle the /graphql endpoint
 func GraphQLHandler(resp http.ResponseWriter, req *http.Request) {
-	result := gql.Do(req)
+	result := graphql.DoWith(graphql.RootSchema, req)
 	// The response will be formatted in json style
 	resp.Header().Add("Content-type", "application/json")
 	json.NewEncoder(resp).Encode(result)

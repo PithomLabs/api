@@ -1,7 +1,6 @@
 package register
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/komfy/api/internal/database"
@@ -32,23 +31,11 @@ func NewUser(request *http.Request) error {
 		return infos.Error
 	}
 
-	db, dbErr := database.Open()
-	defer func() {
-		cErr := db.Close()
-		if cErr != nil {
-			log.Println(cErr)
-		}
-	}()
-
-	if dbErr != nil {
-		return dbErr
-	}
-
 	validChan := make(chan sign.Transport)
 	tempPass := infos.User.Password
 	infos.User.Password = ""
 
-	go isValidUser(db, infos.User, validChan)
+	go isValidUser(infos.User, validChan)
 
 	hashed, hErr := hashPassword(tempPass)
 	tempPass = ""
@@ -68,13 +55,16 @@ func NewUser(request *http.Request) error {
 	sendChan := make(chan sign.Transport)
 	go sendMail(infos.User, sendChan)
 
-	db.AddUser(infos.User)
-	sendChan <- sign.CreateBoolTransport(true)
+	database.AddUser(infos.User)
+	// Send an empty Transport because the sendMail function
+	// Shouldn't access the UserID field before user is added to
+	// the database
+	sendChan <- sign.Transport{}
 
 	sendInfos := <-sendChan
 	close(sendChan)
 	if sendInfos.Error != nil {
-		db.DeleteUser(infos.User)
+		database.DeleteUser(infos.User)
 		return sendInfos.Error
 	}
 

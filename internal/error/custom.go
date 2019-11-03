@@ -10,6 +10,8 @@ var (
 	ErrUserIsntCheck        = errors.New("the given user has not check is email address")
 	ErrHashing              = errors.New("An error occured while trying to hash password")
 	ErrUserAlreadyChecked   = errors.New("user is already checked")
+	ErrUserDoesntExist      = errors.New("this user does not exist")
+	ErrPostDoesntExist      = errors.New("this post does not exist")
 	ErrTokenForgotten       = errors.New("token is missing")
 	ErrSigningMethod        = errors.New("signing method wasn't matching")
 	ErrTokenNotValid        = errors.New("token is not valid")

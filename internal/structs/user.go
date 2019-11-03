@@ -8,5 +8,7 @@ type User struct {
 	Email    string `json:"email"`
 	Avatar   string
 	NSFW     bool
+	NSFWPage bool
 	Checked  bool
+	Posts    []Post
 }

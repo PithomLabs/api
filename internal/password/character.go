@@ -1,4 +1,4 @@
-package randutils
+package password
 
 import (
 	"math/rand"
@@ -18,8 +18,7 @@ const (
 	seqxByte = 1<<seqByte - 1
 )
 
-// GeneratePassword return a password randomly generated
-func GeneratePassword() string {
+func CharacterSequence() string {
 	// Change the seed for random purpose
 	rand.Seed(time.Now().UnixNano())
 	// Create a byte slice of passLen size

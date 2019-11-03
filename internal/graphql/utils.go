@@ -1,9 +1,9 @@
-package gql
+package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	err "github.com/komfy/api/pkg/error"
-	"github.com/komfy/api/pkg/jwt"
+	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/jwt"
 )
 
 // The type of function needed inside the privatefield function parameters
@@ -17,7 +17,7 @@ func generalResolveFunc(parameters graphql.ResolveParams, fn resolveFunc) (inter
 	}
 
 	if !context.Private {
-		tokenInfos, jErr := jwt.IsTokenValid(context.Token)
+		tokenInfos, jErr := jwt.IsValid(context.Token)
 		if jErr != nil {
 			return nil, jErr
 		}
@@ -52,5 +52,6 @@ func getContext(parameters graphql.ResolveParams) (ContextProvider, error) {
 	if !ok {
 		return context, err.ErrContextProvider
 	}
+
 	return context, nil
 }

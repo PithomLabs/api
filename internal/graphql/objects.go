@@ -1,13 +1,13 @@
-package gql
+package graphql
 
 import (
 	"fmt"
-	"log"
 
-	"github.com/komfy/api/pkg/jwt"
+	"github.com/komfy/api/internal/database"
+	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/structs"
 
 	"github.com/graphql-go/graphql"
-	db "github.com/komfy/api/pkg/database"
 )
 
 // Main graphql struct
@@ -18,49 +18,45 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 		"user": &graphql.Field{
 			Type: user,
 			Args: graphql.FieldConfigArgument{
-				"userid": &graphql.ArgumentConfig{
+				"id": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				return generalResolveFunc(parameters, func(context ContextProvider, tokenInfos interface{}) (interface{}, error) {
-					id, ok := parameters.Args["userid"].(int)
-					if !ok {
-						log.Print("userid should be an integer")
-						return nil, nil
-					}
+				return generalResolveFunc(parameters,
+					// The resolveFunc for this field
+					func(context ContextProvider, tokenInfos interface{}) (interface{}, error) {
+						// We do not need to verify if postid is really an integer
+						// because graphql will do it for us
+						id, _ := parameters.Args["userid"].(int)
 
-					// Get the user from the ID
-					strID := fmt.Sprintf("%v", id)
-					user := context.Database.AskUserByID(strID)
+						strID := fmt.Sprintf("%v", id)
+						user := database.UserByID(strID)
 
-					if user.Username == "" {
-						return nil, nil
-					}
+						if user.Username == "" {
+							return nil, err.ErrUserDoesntExist
+						}
 
-					return user, nil
-				})
+						return user, nil
+					})
 			},
 		},
 		"post": &graphql.Field{
 			Type: postGQL,
 			Args: graphql.FieldConfigArgument{
-				"postid": &graphql.ArgumentConfig{
+				"id": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
 				return generalResolveFunc(parameters, func(context ContextProvider, tokenInfos interface{}) (interface{}, error) {
-					id, ok := parameters.Args["postid"].(int)
-					if !ok {
-						log.Print("postid should be a integer.")
-						return nil, nil
-					}
-					strID := fmt.Sprintf("%v", id)
+					// We do not need to verify if postid is really an integer
+					// because graphql will do it for us
+					id, _ := parameters.Args["postid"].(int)
 
-					post := context.Database.AskPostByID(strID)
+					post := database.PostByID(id)
 					if post.PostID == 0 {
-						return nil, nil
+						return nil, err.ErrPostDoesntExist
 
 					}
 
@@ -87,7 +83,7 @@ var user = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
 				// NSFW is a private field, which need authentication
 				return privatiseField(parameters, func(context ContextProvider) (interface{}, error) {
-					sourceUser, ok := parameters.Source.(*db.User)
+					sourceUser, ok := parameters.Source.(*structs.User)
 					if !ok {
 						return nil, nil
 					}
@@ -112,17 +108,7 @@ var user = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				context, cErr := getContext(parameters)
-				if cErr != nil {
-					return nil, cErr
-				}
-
-				_, err := jwt.IsTokenValid(context.Token)
-				if err != nil {
-					return nil, err
-
-				}
-
+				// Still need to be implemented
 				return nil, nil
 			},
 		},
@@ -160,22 +146,8 @@ var postGQL = graphql.NewObject(graphql.ObjectConfig{
 		"user": &graphql.Field{
 			Type: basicUserGQL,
 			Resolve: func(parameters graphql.ResolveParams) (interface{}, error) {
-				context, cErr := getContext(parameters)
-				if cErr != nil {
-					return nil, nil
-				}
-
-				// The variable sourcePost represent the current post
-				sourcePost := parameters.Source.(*db.Post)
-				id := fmt.Sprintf("%v", sourcePost.UserID)
-
-				user := context.Database.AskUserByID(id)
-				if user.Username == "" {
-					return nil, nil
-
-				}
-
-				return user, nil
+				// Still need to be implemented
+				return nil, nil
 			},
 		},
 		"type": &graphql.Field{

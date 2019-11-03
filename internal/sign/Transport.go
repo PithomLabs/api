@@ -4,15 +4,12 @@ import (
 	"github.com/komfy/api/internal/structs"
 )
 
-// A simple struct in order to transport information
-// from functions inside the authentication and registration
 type Transport struct {
 	User  *structs.User
+	JWT   string
 	Error error
 	Bool  bool
 }
-
-
 
 func CreateErrorTransport(transportError error) Transport {
 	return Transport{
@@ -31,6 +28,13 @@ func CreateUserTransport(transportUser *structs.User) Transport {
 func CreateBoolTransport(transportBool bool) Transport {
 	return Transport{
 		Bool:  transportBool,
+		Error: nil,
+	}
+}
+
+func CreateJWTTransport(transportJWT string) Transport {
+	return Transport{
+		JWT:   transportJWT,
 		Error: nil,
 	}
 }

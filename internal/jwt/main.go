@@ -1,34 +1,29 @@
 package jwt
 
 import (
-	"log"
 	"os"
 
 	jwt "github.com/dgrijalva/jwt-go"
-
-	db "github.com/komfy/api/pkg/database"
-	err "github.com/komfy/api/pkg/error"
+	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/structs"
 )
 
-// CreateToken is used inside auth endpoint
-// In order to create a token for graphql auth
-func CreateToken(user *db.User) string {
+func Create(user *structs.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"username": user.Username,
 	})
 
 	strToken, err := token.SignedString([]byte(os.Getenv("secret")))
 	if err != nil {
-		log.Print(err)
+		return "", nil
 
 	}
 
-	return strToken
+	return strToken, nil
 
 }
 
-// IsTokenValid check if a token is valid
-func IsTokenValid(token string) (interface{}, error) {
+func IsValid(token string) (interface{}, error) {
 	if token == "" {
 		return nil, err.ErrTokenForgotten
 

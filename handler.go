@@ -3,20 +3,21 @@ package handler
 import (
 	"net/http"
 
+	"github.com/komfy/api/internal/initialize"
 	"github.com/komfy/api/lambdas"
-	//"github.com/komfy/api/pkg/captcha"
-	nu "github.com/komfy/api/pkg/netutils"
+
+	"github.com/komfy/api/internal/netutils"
 )
 
-// MainHandler works as a ServerMux, just in a simpler way
+// MainHandler works as a ServerMux, just in a much simpler way
 func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	// Enable Cross-Origin
-	nu.EnableCORS(&resp, "https://komfy.now.sh")
+	netutils.EnableCORS(&resp, "https://komfy.now.sh")
 
-	/*if !captcha.IsInitialize {
-		captcha.InitializeMemoryStorage()
+	if !initialize.IsOkay {
+		initialize.TurnOkay()
 
-	}*/
+	}
 
 	path := req.URL.Path
 
@@ -25,10 +26,10 @@ func MainHandler(resp http.ResponseWriter, req *http.Request) {
 		lambdas.IndexHandler(resp, req)
 
 	case "/rand":
-		lambdas.RandHandler(resp, req)
+		lambdas.PasswordCharacterHandler(resp, req)
 
 	case "/rand_dict":
-		lambdas.RandDictHandler(resp, req)
+		lambdas.PasswordDictionnaryHandler(resp, req)
 
 	case "/reg":
 		lambdas.RegisterHandler(resp, req)

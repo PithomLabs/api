@@ -122,10 +122,11 @@ func parseMultipart(values map[string][]string) sign.Transport {
 	return parseUrlencoded(urlValues)
 }
 
-func isValidUser(db database.KomfyDB, user *structs.User, validChan chan<- sign.Transport) {
-	valid := db.IsValid(user)
+func isValidUser(user *structs.User, validChan chan<- sign.Transport) {
+	valid := database.IsValidUser(user)
 	if !valid {
 		validChan <- sign.CreateErrorTransport(err.ErrUserNotValid)
+		return
 	}
 	validChan <- sign.CreateBoolTransport(valid)
 
@@ -160,6 +161,9 @@ func credentialMissing(user, pass, email bool) sign.Transport {
 
 func sendMail(user *structs.User, sendChan chan sign.Transport) {
 	if !mail.IsValid(user.Email) {
+		// Receive the empty Transport which is normally supposed
+		// to indicate to the mail.Send function
+		// when it can access the UserID field
 		<-sendChan
 		sendChan <- sign.CreateErrorTransport(err.ErrMailNotValid)
 	}
