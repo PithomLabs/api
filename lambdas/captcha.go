@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/komfy/api/pkg/captcha"
-	err "github.com/komfy/api/pkg/error"
+	"github.com/komfy/api/internal/captcha"
+	err "github.com/komfy/api/internal/error"
 )
 
 // GetCaptchaHandler is the handler function for captcha generation
@@ -39,17 +39,17 @@ func VerifyCaptchaHandler(resp http.ResponseWriter, req *http.Request) {
 			resp.Write([]byte("Captcha has been solved"))
 
 		} else {
-			err.HandleErrorInHTTP(resp, err.ErrCaptchaInvalid)
+			err.ShowOnBrowser(resp, err.ErrCaptchaInvalid)
 			log.Print(err.ErrCaptchaInvalid.Error())
 
 		}
 
 	} else if id == "" {
-		err.HandleErrorInHTTP(resp, err.ErrCaptchaHeaderMissing)
+		err.ShowOnBrowser(resp, err.ErrCaptchaHeaderMissing)
 		log.Print(err.ErrCaptchaHeaderMissing.Error())
 
 	} else if digits == "" {
-		err.HandleErrorInHTTP(resp, err.ErrDigitsMissing)
+		err.ShowOnBrowser(resp, err.ErrDigitsMissing)
 		log.Print(err.ErrDigitsMissing.Error())
 
 	}

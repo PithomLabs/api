@@ -7,9 +7,9 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"github.com/komfy/api/internal/initialize"
+	"github.com/komfy/api/internal/netutils"
 	"github.com/komfy/api/lambdas"
-	"github.com/komfy/api/pkg/captcha"
-	nu "github.com/komfy/api/pkg/netutils"
 )
 
 func main() {
@@ -19,9 +19,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if !captcha.IsInitialize {
-		captcha.InitializeMemoryStorage()
+	if !initialize.IsOkay {
+		initialize.TurnOkay()
 	}
+
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
 
@@ -29,6 +30,7 @@ func main() {
 	http.HandleFunc("/rand", AddCORSOnLocal)
 	http.HandleFunc("/rand_dict", AddCORSOnLocal)
 	http.HandleFunc("/reg", AddCORSOnLocal)
+	http.HandleFunc("/verify", AddCORSOnLocal)
 	http.HandleFunc("/auth", AddCORSOnLocal)
 	http.HandleFunc("/captcha/get", AddCORSOnLocal)
 	http.HandleFunc("/captcha/verify", AddCORSOnLocal)
@@ -39,17 +41,17 @@ func main() {
 
 // AddCORSOnLocal enable CORS request from localhost:3000 when doing local development
 func AddCORSOnLocal(resp http.ResponseWriter, req *http.Request) {
-	nu.EnableCORS(&resp, "http://localhost:3000")
+	netutils.EnableCORS(&resp, "http://localhost:3000")
 
 	switch req.URL.Path {
 	case "/":
 		lambdas.IndexHandler(resp, req)
 
 	case "/rand":
-		lambdas.RandHandler(resp, req)
+		lambdas.PasswordCharacterHandler(resp, req)
 
 	case "/rand_dict":
-		lambdas.RandDictHandler(resp, req)
+		lambdas.PasswordDictionnaryHandler(resp, req)
 
 	case "/reg":
 		lambdas.RegisterHandler(resp, req)
