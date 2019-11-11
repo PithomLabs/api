@@ -112,7 +112,7 @@ func parseJSON(body io.ReadCloser) sign.Transport {
 }
 
 func parseMultipart(values map[string][]string) sign.Transport {
-	var urlValues url.Values
+	urlValues := url.Values{}
 	for key, value := range values {
 		if len(value) == 1 {
 			urlValues.Set(key, value[0])
