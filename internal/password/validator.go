@@ -5,14 +5,14 @@ import (
 )
 
 type Criteria struct {
-	length   bool
-	number   bool
-	upper    bool
-	special  bool
-	position int
+	Length   bool
+	Number   bool
+	Upper    bool
+	Special  bool
+	Position int
 }
 
-var specialChars []byte = []byte("%$*!._#&")
+var specialChars []byte = []byte("%$*!._#&-'")
 
 func checkChars(c rune) bool {
 	for _, v := range specialChars {
@@ -25,20 +25,20 @@ func checkChars(c rune) bool {
 
 //Validate provides server side password validation
 func Validate(pass string) (c Criteria) {
-	c.length = len(pass) >= passLen
+	c.Length = len(pass) >= passLen
 	for key, char := range pass {
 		switch {
 		case unicode.IsNumber(char):
-			c.number = true
+			c.Number = true
 		case unicode.IsUpper(char):
-			c.upper = true
+			c.Upper = true
 		case unicode.IsSymbol(char) || unicode.IsPunct(char):
 			if !checkChars(char) {
-				c.position = key + 1
-				c.special = false
+				c.Position = key + 1
+				c.Special = false
 				return
 			}
-			c.special = true
+			c.Special = true
 		case unicode.IsLetter(char):
 			//just to check letters
 		}

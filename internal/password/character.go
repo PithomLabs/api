@@ -7,7 +7,7 @@ import (
 
 const (
 	// All the possible characters within a password
-	sequence = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%$*!._#&"
+	sequence = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%$*!._#&-'"
 	// The desire length
 	passLen = 12
 	// The sequence length
