@@ -34,6 +34,9 @@ func CharacterSequence() string {
 			i++
 		}
 	}
-
-	return string(byteArr)
+	pass := string(byteArr)
+	if Validate(pass) != perfect {
+		return CharacterSequence()
+	}
+	return pass
 }

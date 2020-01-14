@@ -48,14 +48,15 @@ func TestValidate(t *testing.T) {
 }
 
 func TestCharacterSequence(t *testing.T) {
-	ch := CharacterSequence()
-	vc := Validate(ch)
-	t.Run("Passing the validation", func(t *testing.T) {
-		if vc != perfect {
-			t.Errorf("Generated password didnt pass validation")
-		}
-	})
-
+	for i := 0; i <= 10; i++ {
+		ch := CharacterSequence()
+		vc := Validate(ch)
+		t.Run("Passing the validation", func(t *testing.T) {
+			if vc != perfect {
+				t.Errorf("Generated password didnt pass validation %v, %v", ch, vc)
+			}
+		})
+	}
 }
 
 func TestWordsSequence(t *testing.T) {
@@ -63,18 +64,21 @@ func TestWordsSequence(t *testing.T) {
 	if err != nil {
 		t.Errorf("Couldnt generate word slice %v", err)
 	}
-	ws := WordsSequence()
+	for i := 0; i <= 10; i++ {
+		ws := WordsSequence()
 
-	vc := Validate(ws)
-	lenws := len(ws)
-	t.Run("Passing the validation", func(t *testing.T) {
-		if vc != perfect {
-			t.Errorf("\n Word sequence doesnt pass validation %v, %v", vc, ws)
-		}
-	})
-	t.Run("Long enough", func(t *testing.T) {
-		if lenws < 20 {
-			t.Errorf("Expected len to be more than 20, got %v", lenws)
-		}
-	})
+		vc := Validate(ws)
+		lenws := len(ws)
+		t.Run("Passing the validation", func(t *testing.T) {
+			if vc != perfect {
+				t.Errorf("\n Word sequence doesnt pass validation %v, %v", vc, ws)
+			}
+		})
+		t.Run("Long enough", func(t *testing.T) {
+			if lenws < 20 {
+				t.Errorf("Expected len to be more than 20, got %v", lenws)
+			}
+		})
+	}
+
 }
