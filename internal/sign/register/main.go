@@ -1,19 +1,19 @@
 package register
 
 import (
-	"net/http"
-
 	"github.com/komfy/api/internal/database"
 	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/password"
 	"github.com/komfy/api/internal/sign"
+	"net/http"
 )
 
 // NewUser will verify user informations from the request,
 // create a new database user, based on those,
 // and send a mail to the user's email
-func NewUser(request *http.Request) error {
+func NewUser(request *http.Request) (error, []string) {
 	if request.Method != http.MethodPost {
-		return err.ErrMethodNotValid
+		return err.ErrMethodNotValid, nil
 	}
 
 	userChan := make(chan sign.Transport)
@@ -21,18 +21,25 @@ func NewUser(request *http.Request) error {
 
 	dErr := doubleCheck(request)
 	if dErr != nil {
-		return dErr
+		return dErr, nil
 	}
 
 	infos := <-userChan
 	close(userChan)
 
 	if infos.Error != nil {
-		return infos.Error
+		return infos.Error, nil
 	}
 
 	validChan := make(chan sign.Transport)
 	tempPass := infos.User.Password
+
+	criteria := password.Validate(tempPass)
+	infos.Validation = password.ThrowErrors(criteria)
+	if len(infos.Validation) > 0 {
+		return nil, infos.Validation
+	}
+
 	infos.User.Password = ""
 
 	go isValidUser(infos.User, validChan)
@@ -40,7 +47,7 @@ func NewUser(request *http.Request) error {
 	hashed, hErr := hashPassword(tempPass)
 	tempPass = ""
 	if hErr != nil {
-		return hErr
+		return hErr, nil
 	}
 
 	infos.User.Password = hashed
@@ -49,7 +56,7 @@ func NewUser(request *http.Request) error {
 	close(validChan)
 
 	if !userValid.Bool {
-		return userValid.Error
+		return userValid.Error, nil
 	}
 
 	sendChan := make(chan sign.Transport)
@@ -65,8 +72,8 @@ func NewUser(request *http.Request) error {
 	close(sendChan)
 	if sendInfos.Error != nil {
 		database.DeleteUser(infos.User)
-		return sendInfos.Error
+		return sendInfos.Error, nil
 	}
 
-	return nil
+	return nil, nil
 }

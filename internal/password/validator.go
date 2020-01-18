@@ -1,7 +1,10 @@
 package password
 
 import (
+	"strconv"
 	"unicode"
+
+	errPack "github.com/komfy/api/internal/error"
 )
 
 type Criteria struct {
@@ -11,6 +14,8 @@ type Criteria struct {
 	Special  bool
 	Position int
 }
+
+var perfect Criteria = Criteria{true, true, true, true, 0}
 
 var specialChars []byte = []byte("%$*!._#&-'")
 
@@ -45,4 +50,24 @@ func Validate(pass string) (c Criteria) {
 	}
 
 	return
+}
+
+//ThrowErrors is a helper function which checks Criteria and throws a slice of errors.
+func ThrowErrors(c Criteria) (errors []string) {
+	if !c.Length {
+		errors = append(errors, errPack.ErrShortPassword.Error())
+	}
+	if !c.Number {
+		errors = append(errors, errPack.ErrNoNumber.Error())
+	}
+	if !c.Upper {
+		errors = append(errors, errPack.ErrNoNumber.Error())
+	}
+	if !c.Special {
+		errors = append(errors, errPack.ErrNoSpecial.Error())
+	}
+	if c.Position != 0 {
+		errors = append(errors, "there is prohibited symbol on position"+strconv.Itoa(c.Position))
+	}
+	return errors
 }

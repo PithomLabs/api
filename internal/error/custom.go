@@ -24,4 +24,8 @@ var (
 	ErrDoubleCheck          = errors.New("double check failed")
 	ErrMethodNotValid       = errors.New("you try to use a non-valid method")
 	ErrMailNotValid         = errors.New("your email address is not valid")
+	ErrShortPassword        = errors.New("password is too short, minimum is 12 characters")
+	ErrNoNumber             = errors.New("there must be at least one number in your password")
+	ErrNoUppercase          = errors.New("there must be at least one uppercase letter in your password")
+	ErrNoSpecial            = errors.New("there should be at least one special character in your password")
 )

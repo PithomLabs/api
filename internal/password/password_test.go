@@ -8,8 +8,6 @@ type testCase struct {
 	Criteria
 }
 
-var perfect Criteria = Criteria{true, true, true, true, 0}
-
 func TestValidate(t *testing.T) {
 	testCases := []testCase{
 		{
