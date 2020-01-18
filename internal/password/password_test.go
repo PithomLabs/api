@@ -1,38 +1,49 @@
 package password
 
-import "testing"
+import (
+	"reflect"
+	"strconv"
+	"testing"
+
+	errPack "github.com/komfy/api/internal/error"
+)
 
 type testCase struct {
 	name     string
 	password string
 	Criteria
+	errors []string
+}
+
+var testCases = []testCase{
+	{
+		name:     "absolutely valid password",
+		password: "SomethingStrange1%",
+		Criteria: Criteria{
+			Length:   true,
+			Number:   true,
+			Upper:    true,
+			Special:  true,
+			Position: 0,
+		},
+		errors: []string{},
+	},
+	{
+		name:     "short and invalid password",
+		password: "1211Some?",
+		Criteria: Criteria{
+			Length:   false,
+			Number:   true,
+			Upper:    true,
+			Special:  false,
+			Position: 9,
+		},
+		errors: []string{errPack.ErrShortPassword.Error(), errPack.ErrNoSpecial.Error(), errPack.ErrWrongSpecial.Error() + strconv.Itoa(9)},
+	},
 }
 
 func TestValidate(t *testing.T) {
-	testCases := []testCase{
-		{
-			name:     "absolutely valid password",
-			password: "SomethingStrange1%",
-			Criteria: Criteria{
-				Length:   true,
-				Number:   true,
-				Upper:    true,
-				Special:  true,
-				Position: 0,
-			},
-		},
-		{
-			name:     "short and invalid password",
-			password: "1211Some?",
-			Criteria: Criteria{
-				Length:   false,
-				Number:   true,
-				Upper:    true,
-				Special:  false,
-				Position: 9,
-			},
-		},
-	}
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var result Criteria
@@ -79,4 +90,16 @@ func TestWordsSequence(t *testing.T) {
 		})
 	}
 
+}
+
+func TestThrowErrors(t *testing.T) {
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			c := Validate(tc.password)
+			errs := ThrowErrors(c)
+			if !reflect.DeepEqual(errs, tc.errors) {
+				t.Errorf("Expected %v got %v", tc.errors, errs)
+			}
+		})
+	}
 }

@@ -28,4 +28,5 @@ var (
 	ErrNoNumber             = errors.New("there must be at least one number in your password")
 	ErrNoUppercase          = errors.New("there must be at least one uppercase letter in your password")
 	ErrNoSpecial            = errors.New("there should be at least one special character in your password")
+	ErrWrongSpecial         = errors.New("there is prohibited symbol on position")
 )

@@ -20,7 +20,10 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 
 	rErr, validationError := register.NewUser(req)
 	if len(validationError) > 0 {
-		//send json with errors
+		err := err.SendJSON(resp, validationError)
+		if err != nil {
+			return
+		}
 	}
 	if rErr != nil {
 		err.ShowOnBrowser(resp, rErr)

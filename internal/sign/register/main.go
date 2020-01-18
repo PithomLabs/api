@@ -36,6 +36,7 @@ func NewUser(request *http.Request) (error, []string) {
 
 	criteria := password.Validate(tempPass)
 	infos.Validation = password.ThrowErrors(criteria)
+
 	if len(infos.Validation) > 0 {
 		return nil, infos.Validation
 	}

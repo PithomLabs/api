@@ -54,6 +54,7 @@ func Validate(pass string) (c Criteria) {
 
 //ThrowErrors is a helper function which checks Criteria and throws a slice of errors.
 func ThrowErrors(c Criteria) (errors []string) {
+	errors = []string{}
 	if !c.Length {
 		errors = append(errors, errPack.ErrShortPassword.Error())
 	}
@@ -67,7 +68,7 @@ func ThrowErrors(c Criteria) (errors []string) {
 		errors = append(errors, errPack.ErrNoSpecial.Error())
 	}
 	if c.Position != 0 {
-		errors = append(errors, "there is prohibited symbol on position"+strconv.Itoa(c.Position))
+		errors = append(errors, errPack.ErrWrongSpecial.Error()+strconv.Itoa(c.Position))
 	}
 	return errors
 }

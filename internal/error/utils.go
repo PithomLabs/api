@@ -1,6 +1,7 @@
 package error
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 )
@@ -16,4 +17,14 @@ func ShowOnBrowser(resp http.ResponseWriter, err error) {
 
 	bitErr := []byte(err.Error())
 	resp.Write(bitErr)
+}
+
+func SendJSON(resp http.ResponseWriter, vErr []string) error {
+	bs, err := json.Marshal(vErr)
+	if err != nil {
+		return err
+	}
+	resp.Header().Set("Content-Type", "application/json")
+	_, err = resp.Write(bs)
+	return nil
 }
