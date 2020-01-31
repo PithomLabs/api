@@ -10,7 +10,8 @@ import (
 
 func Create(user *structs.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"username": user.Username,
+		"ID":       user.ID,
+		"Username": user.Username,
 	})
 
 	strToken, err := token.SignedString([]byte(os.Getenv("secret")))

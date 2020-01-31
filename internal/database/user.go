@@ -1,42 +1,95 @@
 package database
 
-import "github.com/komfy/api/internal/structs"
+import (
+	"github.com/komfy/api/internal/structs"
+)
 
-func IsValidUser(user *structs.User) bool {
-	users := findSameUsers(user.Username, user.Email)
+func IsValidUser(user *structs.User) (bool, error) {
+	users := []structs.User{}
+	cuErr := openDatabase.Instance.Where("username = ? AND email = ?", user.Username, user.Email).Find(&users).Error
+	if cuErr != nil {
+		return false, nil
+	}
 
-	return len(users) == 0
+	return len(users) == 0, nil
 }
 
-func findSameUsers(username, email string) []structs.User {
-	var users []structs.User
-	openDatabase.Instance.Where("email = ? OR username = ?", email, username).Find(&users)
+func AddUser(user *structs.User) error {
+	// INSERT INTO users(...) VALUES(`user`)
+	auErr := openDatabase.Instance.Create(user).Error
+	if auErr != nil {
+		return auErr
+	}
+	// Add the User's ID value to its settings
+	user.Settings.UserID = user.ID
+	// INSERT INTO settings(...) VALUES(`user.Settings`)
+	asErr := openDatabase.Instance.Create(&user.Settings).Error
+	if asErr != nil {
+		return asErr
+	}
 
-	return users
+	return nil
 }
 
-func AddUser(user *structs.User) {
-	openDatabase.Instance.Create(user)
+func DeleteUser(user *structs.User) error {
+	// DELETE FROM users WHERE id = `user.id`
+	// User's settings, posts, and comments will be deleted
+	// Thanks to ON DELETE CASCADE
+	dErr := openDatabase.Instance.Delete(user).Error
+	if dErr != nil {
+		return dErr
+	}
+	return nil
 }
 
-func DeleteUser(user *structs.User) {
-	openDatabase.Instance.Delete(user, "username = ?", user.Username)
-}
-
-func UserByName(username string) *structs.User {
+func GetUserByName(username string) (*structs.User, error) {
 	user := &structs.User{}
-	openDatabase.Instance.First(&user, "username = ?", username)
+	// SELECT * FROM users WHERE username = `username`
+	guErr := openDatabase.Instance.Where("username = ?", username).First(user).Error
+	if guErr != nil {
+		return nil, guErr
+	}
 
-	return user
+	// SELECT * FROM settings WHERE user_id = `user.ID`
+	gsErr := GetUserSettings(user)
+	if gsErr != nil {
+		return nil, gsErr
+	}
+
+	return user, nil
 }
 
-func UserByID(userID string) *structs.User {
+func GetUserByID(id string) (*structs.User, error) {
 	user := &structs.User{}
-	openDatabase.Instance.First(&user, "user_id = ?", userID)
+	// SELECT * FROM users WHERE id = `id`
+	guErr := openDatabase.Instance.Where("id = ?", id).First(user).Error
+	if guErr != nil {
+		return nil, guErr
+	}
 
-	return user
+	gsErr := GetUserSettings(user)
+	if gsErr != nil {
+		return nil, gsErr
+	}
+
+	return user, nil
 }
 
-func UpdateCheck(user *structs.User) {
-	openDatabase.Instance.Model(&user).Update("checked", true)
+func GetUserSettings(user *structs.User) error {
+	// SELECT * FROM settings WHERE user_id = `user.ID`
+	csErr := openDatabase.Instance.Model(user).Related(&user.Settings).Error
+	if csErr != nil {
+		return csErr
+	}
+
+	return nil
+}
+
+func UpdateCheck(user *structs.User) error {
+	uErr := openDatabase.Instance.Model(user).UpdateColumn("checked", true).Error
+	if uErr != nil {
+		return uErr
+	}
+
+	return nil
 }

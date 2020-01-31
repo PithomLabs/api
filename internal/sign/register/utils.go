@@ -123,8 +123,10 @@ func parseMultipart(values map[string][]string) sign.Transport {
 }
 
 func isValidUser(user *structs.User, validChan chan<- sign.Transport) {
-	valid := database.IsValidUser(user)
-	if !valid {
+	valid, vErr := database.IsValidUser(user)
+	if vErr != nil {
+		validChan <- sign.CreateErrorTransport(err.ErrInDatabaseOccured)
+	} else if !valid {
 		validChan <- sign.CreateErrorTransport(err.ErrUserNotValid)
 		return
 	}

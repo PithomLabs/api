@@ -27,14 +27,6 @@ func main() {
 	fmt.Println("Server is running on port 8080...")
 
 	http.HandleFunc("/", AddCORSOnLocal)
-	http.HandleFunc("/rand", AddCORSOnLocal)
-	http.HandleFunc("/rand_dict", AddCORSOnLocal)
-	http.HandleFunc("/reg", AddCORSOnLocal)
-	http.HandleFunc("/verify", AddCORSOnLocal)
-	http.HandleFunc("/auth", AddCORSOnLocal)
-	http.HandleFunc("/captcha/get", AddCORSOnLocal)
-	http.HandleFunc("/captcha/verify", AddCORSOnLocal)
-	http.HandleFunc("/graphql", AddCORSOnLocal)
 	http.ListenAndServe(":8080", nil)
 
 }
@@ -42,34 +34,36 @@ func main() {
 // AddCORSOnLocal enable CORS request from localhost:3000 when doing local development
 func AddCORSOnLocal(resp http.ResponseWriter, req *http.Request) {
 	netutils.EnableCORS(&resp, "http://localhost:3000")
+	// We suppress the '/' at the beginning of the path
+	path := req.URL.Path[1:]
 
-	switch req.URL.Path {
-	case "/":
-		lambdas.IndexHandler(resp, req)
-
-	case "/rand":
+	switch path {
+	case "rand":
 		lambdas.PasswordCharacterHandler(resp, req)
 
-	case "/rand_dict":
+	case "rand_dict":
 		lambdas.PasswordDictionnaryHandler(resp, req)
 
-	case "/reg":
+	case "reg":
 		lambdas.RegisterHandler(resp, req)
 
-	case "/auth":
+	case "auth":
 		lambdas.AuthenticationHandler(resp, req)
 
-	case "/verify":
+	case "verify":
 		lambdas.VerifyHandler(resp, req)
 
-	case "/graphql":
+	case "graphql":
 		lambdas.GraphQLHandler(resp, req)
 
-	case "/captcha/get":
+	case "captcha/get":
 		lambdas.GetCaptchaHandler(resp, req)
 
-	case "/captcha/verify":
+	case "captcha/verify":
 		lambdas.VerifyCaptchaHandler(resp, req)
+
+	default:
+		lambdas.IndexHandler(resp, req)
 
 	}
 }

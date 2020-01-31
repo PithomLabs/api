@@ -31,7 +31,7 @@ func Send(user *structs.User, sendChan chan sign.Transport) error {
 	// with man goroutine and know when we can access
 	// UserID field without trouble
 	<-sendChan
-	msg.SetBody("text/html", fmt.Sprintf(mailBody, user.UserID))
+	msg.SetBody("text/html", fmt.Sprintf(mailBody, user.ID))
 
 	dErr := dialer.DialAndSend(msg)
 	if dErr != nil {

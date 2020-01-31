@@ -6,7 +6,10 @@ import (
 )
 
 func Verify(code string) error {
-	user := database.UserByID(code)
+	user, idErr := database.GetUserByID(code)
+	if idErr != nil {
+		return err.ErrInDatabaseOccured
+	}
 
 	if user.Username == "" {
 		return err.ErrUserDoesntExist
@@ -16,7 +19,10 @@ func Verify(code string) error {
 		return err.ErrUserAlreadyChecked
 	}
 
-	database.UpdateCheck(user)
+	uErr := database.UpdateCheck(user)
+	if uErr != nil {
+		return err.ErrInDatabaseOccured
+	}
 
 	return nil
 }

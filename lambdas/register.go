@@ -18,7 +18,19 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	rErr := register.NewUser(req)
+	rErr, missingPasswordCriteria := register.NewUser(req)
+	if len(missingPasswordCriteria) > 0 {
+		// Whether the SendJSON functions succeeded or not
+		// We need to return from the function so we avoid the redirection
+		// Plus we need to log.Println the previous error
+		log.Println(rErr)
+		jErr := err.SendJSON(resp, missingPasswordCriteria)
+		if jErr != nil {
+			err.ShowOnBrowser(resp, jErr)
+			log.Println(jErr)
+		}
+		return
+	}
 	if rErr != nil {
 		err.ShowOnBrowser(resp, rErr)
 		log.Println(rErr)
@@ -26,5 +38,4 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(resp, req, redirectRegURL, http.StatusSeeOther)
-
 }

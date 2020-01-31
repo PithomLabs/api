@@ -12,10 +12,11 @@ import (
 func VerifyHandler(resp http.ResponseWriter, req *http.Request) {
 	verificationCode := req.URL.Query().Get("verify_code")
 
-	verr := mail.Verify(verificationCode)
-	if verr != nil {
-		err.ShowOnBrowser(resp, verr)
-		log.Print(verr)
+	vErr := mail.Verify(verificationCode)
+	if vErr != nil {
+		err.ShowOnBrowser(resp, vErr)
+		log.Print(vErr)
+		return
 	}
 
 	resp.Write([]byte("Account email as been verified"))

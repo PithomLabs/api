@@ -86,7 +86,12 @@ func credentialMissing(user, pass bool) sign.Transport {
 }
 
 func checkUser(user *structs.User, checkChan chan sign.Transport) {
-	dbUser := database.UserByName(user.Username)
+	dbUser, uErr := database.GetUserByName(user.Username)
+	if uErr != nil {
+		checkChan <- sign.CreateErrorTransport(err.ErrInDatabaseOccured)
+		return
+	}
+
 	if dbUser.Username == "" {
 		checkChan <- sign.CreateErrorTransport(err.ErrUserDoesntExist)
 		return
