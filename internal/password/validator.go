@@ -7,6 +7,7 @@ import (
 	errPack "github.com/komfy/api/internal/error"
 )
 
+//Criteria is a packages which contains all the password verification criterias
 type Criteria struct {
 	Length   bool
 	Number   bool

@@ -8,10 +8,8 @@ func IsValidUser(user *structs.User) bool {
 	return len(users) == 0
 }
 
-func findSameUsers(username, email string) []structs.User {
-	var users []structs.User
+func findSameUsers(username, email string) (users []structs.User) {
 	openDatabase.Instance.Where("email = ? OR username = ?", email, username).Find(&users)
-
 	return users
 }
 

@@ -28,7 +28,7 @@ func Send(user *structs.User, sendChan chan sign.Transport) error {
 	dialer := email.NewDialer("smtp.gmail.com", 587, from, pass)
 
 	// Receive an empty Transport in order to synchronize
-	// with man goroutine and know when we can access
+	// with main goroutine and know when we can access
 	// UserID field without trouble
 	<-sendChan
 	msg.SetBody("text/html", fmt.Sprintf(mailBody, user.UserID))
