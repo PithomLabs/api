@@ -4,6 +4,7 @@ package cloudinary
 import (
 	"bytes"
 	"crypto/sha1"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -27,6 +28,39 @@ type Service struct {
 	simulate  bool
 	resType   int
 }
+
+//UploadResponse ...
+type UploadResponse struct {
+	PublicID     string    `json:"public_id"`
+	Width        int       `json:"width"`
+	Height       int       `json:"height"`
+	Format       string    `json:"format"`
+	ResourseType string    `json:"resource_type"`
+	CreatedAt    time.Time `json:"created_at"`
+	SecureURL    string    `json:"secure_url"`
+	URL          string    `json:"url"`
+}
+
+// {
+// 	"public_id":"Screen Shot 2020-01-12 at 1.20.21 PM",
+// 	"version":1580912870,
+// 	"signature":"3137036a0f6a742dbde09074d44e7d8528409682",
+// 	"width":1440,
+// 	"height":900,
+// 	"format":"png",
+// 	"resource_type":"image",
+// 	"created_at":"2020-02-05T14:27:50Z",
+// 	"tags":[
+
+// 	],
+// 	"bytes":1135076,
+// 	"type":"upload",
+// 	"etag":"14f65dc9ab21f5868a0f2b29c02f326a",
+// 	"placeholder":false,
+// 	"url":"http://res.cloudinary.com/mlvni/image/upload/v1580912870/Screen%20Shot%202020-01-12%20at%201.20.21%20PM.png",
+// 	"secure_url":"https://res.cloudinary.com/mlvni/image/upload/v1580912870/Screen%20Shot%202020-01-12%20at%201.20.21%20PM.png",
+// 	"original_filename":"Screen Shot 2020-01-12 at 1.20.21 PM"
+//  }
 
 const (
 	baseUploadURL string = "https://api.cloudinary.com/v1_1"
@@ -72,19 +106,19 @@ func Dial(uri string) (*Service, error) {
 
 //UploadFile receives file, most probably from Multipart Form, uploads to cloud and returns
 //a link to the resource
-func (s *Service) UploadFile(fh *multipart.FileHeader, randomPublicID bool) (string, error) {
+func (s *Service) UploadFile(fh *multipart.FileHeader, randomPublicID bool) (*UploadResponse, error) {
 	var publicID string
 	file, err := fh.Open()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	fileBuf, err := ioutil.ReadAll(file)
 	defer file.Close()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if len(fileBuf) == 0 {
-		return "", fmt.Errorf("Not allowed to upload empty files: %s", fh.Filename)
+		return nil, fmt.Errorf("Not allowed to upload empty files: %s", fh.Filename)
 	}
 	filename := trimExt(fh.Filename)
 
@@ -96,21 +130,21 @@ func (s *Service) UploadFile(fh *multipart.FileHeader, randomPublicID bool) (str
 		publicID = filename
 		pi, err := mw.CreateFormField("public_id")
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		pi.Write([]byte(publicID))
 	}
 	//Writing an API key
 	ak, err := mw.CreateFormField("api_key")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	ak.Write([]byte(s.apiKey))
 
 	//Writing timestamp
 	ts, err := mw.CreateFormField("timestamp")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 	ts.Write([]byte(timestamp))
@@ -118,7 +152,7 @@ func (s *Service) UploadFile(fh *multipart.FileHeader, randomPublicID bool) (str
 	//Writing signature
 	si, err := mw.CreateFormField("signature")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	hash := sha1.New()
 	part := fmt.Sprintf("timestamp=%s%s", timestamp, s.apiSecret)
@@ -131,26 +165,30 @@ func (s *Service) UploadFile(fh *multipart.FileHeader, randomPublicID bool) (str
 
 	fi, err := mw.CreateFormFile("file", fh.Filename)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	fi.Write(fileBuf)
 
 	err = mw.Close()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	uploadURL := s.uploadURL.String()
 
 	req, err := http.NewRequest("POST", uploadURL, buf)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	req.Header.Set("Content-Type", mw.FormDataContentType())
 	resp, err := http.DefaultClient.Do(req)
 	body, err := ioutil.ReadAll(resp.Body)
-
-	return string(body), nil
+	upResp := new(UploadResponse)
+	err = json.Unmarshal(body, upResp)
+	if err != nil {
+		return nil, err
+	}
+	return upResp, err
 }
 
 func trimExt(filename string) string {
