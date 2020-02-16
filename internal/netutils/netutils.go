@@ -7,5 +7,6 @@ import "net/http"
 // Cross-Origin-Ressources-Sharing requests
 func EnableCORS(resp *http.ResponseWriter, crossOriginURL string) {
 	(*resp).Header().Set("Access-Control-Allow-Origin", crossOriginURL)
-
+	(*resp).Header().Set("Access-Control-Allow-Headers", "Origin, Accept, Content-Type, X-Requested-With, Authorization")
+	(*resp).Header().Set("Access-Control-Allow-Methods", "GET,POST")
 }
