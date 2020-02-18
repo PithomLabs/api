@@ -1,6 +1,7 @@
 package lambdas
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,8 +9,7 @@ import (
 	"github.com/komfy/api/internal/sign/register"
 )
 
-const redirectRegURL = "https://komfy.now.sh/verify_email"
-
+// RegisterHandler - handle registration request from frontend for /reg endpoint
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha")
@@ -31,6 +31,8 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(resp, req, redirectRegURL, http.StatusSeeOther)
+	http.WriteHeader(http.Success)
+
+	fmt.Fprint(resp, "Registration success")
 
 }
