@@ -7,7 +7,7 @@ import (
 
 const (
 	// All the possible characters within a password
-	sequence = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%$*!._#&"
+	sequence = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%$*!._#&-'"
 	// The desire length
 	passLen = 12
 	// The sequence length
@@ -34,6 +34,9 @@ func CharacterSequence() string {
 			i++
 		}
 	}
-
-	return string(byteArr)
+	pass := string(byteArr)
+	if Validate(pass) != perfect {
+		return CharacterSequence()
+	}
+	return pass
 }

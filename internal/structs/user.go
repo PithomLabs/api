@@ -9,7 +9,7 @@ type User struct {
 	Fullname string
 
 	Bio       string
-	AvatarURL string `gorm:"column:avatar_url" json:"avatar_url"`
+	AvatarURL string `gorm:"column:avatar_url;default:'default_komfy_profile_url'" json:"avatar_url"`
 	CreatedAt uint64 `gorm:"column:created_at" json:"created_at"`
 	Checked   bool
 	// `-` means we ignore the settings field when working with gorm

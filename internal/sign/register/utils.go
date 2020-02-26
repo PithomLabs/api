@@ -82,8 +82,15 @@ func parseUrlencoded(values url.Values) sign.Transport {
 
 	}
 
+	// If fullname is not provided then set it to username's value
+	fullname, fExists := values["fullname"]
+	if !fExists {
+		fullname = username
+	}
+
 	user := &structs.User{
 		Username: username[0],
+		Fullname: fullname[0],
 		Password: password[0],
 		Email:    email[0],
 	}
@@ -103,9 +110,16 @@ func parseJSON(body io.ReadCloser) sign.Transport {
 	uExists := user.Username != ""
 	pExists := user.Password != ""
 	eExists := user.Email != ""
+
 	if !(uExists && pExists && eExists) {
 		return credentialMissing(uExists, pExists, eExists)
 
+	}
+
+	// Check if fullname was given, if not set it to username's value
+	fExists := user.Fullname != ""
+	if !fExists {
+		user.Fullname = user.Username
 	}
 
 	return sign.CreateUserTransport(user)

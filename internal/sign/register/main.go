@@ -2,39 +2,38 @@ package register
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/komfy/api/internal/database"
 	err "github.com/komfy/api/internal/error"
+	"github.com/komfy/api/internal/password"
 	"github.com/komfy/api/internal/sign"
-	"net/http"
-	"time"
 )
 
 // NewUser will verify user informations from the request,
 // create a new database user, based on those,
 // and send a mail to the user's email
-func NewUser(request *http.Request) error {
+func NewUser(request *http.Request) ([]string, error) {
 	if request.Method != http.MethodPost {
-		return err.ErrMethodNotValid
+		return nil, err.ErrMethodNotValid
 	}
 
 	userChan := make(chan sign.Transport)
 	go extractUser(request, userChan)
 
-	/*dErr := doubleCheck(request)
+	dErr := doubleCheck(request)
 	if dErr != nil {
-		return dErr, nil
-	}*/
+		return nil, dErr
+	}
 
 	infos := <-userChan
 	close(userChan)
 
-	// Add values to Non-Null fields to user structs
-	infos.User.Fullname = infos.User.Username
+	// Set the created_at db field to Unix time
 	infos.User.CreatedAt = uint64(time.Now().Unix())
 
 	if infos.Error != nil {
-		return infos.Error
+		return nil, infos.Error
 	}
 
 	validChan := make(chan sign.Transport)
@@ -44,7 +43,7 @@ func NewUser(request *http.Request) error {
 	infos.Validation = password.ThrowErrors(criteria)
 
 	if len(infos.Validation) > 0 {
-		return err.ErrPasswordNotValid, infos.Validation
+		return infos.Validation, err.ErrPasswordNotValid
 	}
 
 	infos.User.Password = ""
@@ -54,7 +53,7 @@ func NewUser(request *http.Request) error {
 	hashed, hErr := hashPassword(tempPass)
 	tempPass = ""
 	if hErr != nil {
-		return hErr
+		return nil, hErr
 	}
 
 	infos.User.Password = hashed
@@ -63,7 +62,7 @@ func NewUser(request *http.Request) error {
 	close(validChan)
 
 	if !userValid.Bool {
-		return userValid.Error
+		return nil, userValid.Error
 	}
 
 	sendChan := make(chan sign.Transport)
@@ -79,8 +78,8 @@ func NewUser(request *http.Request) error {
 	close(sendChan)
 	if sendInfos.Error != nil {
 		database.DeleteUser(infos.User)
-		return sendInfos.Error
+		return nil, sendInfos.Error
 	}
 
-	return nil
+	return nil, nil
 }

@@ -5,10 +5,11 @@ import (
 )
 
 type Transport struct {
-	User  *structs.User
-	JWT   string
-	Error error
-	Bool  bool
+	User       *structs.User
+	JWT        string
+	Error      error
+	Bool       bool
+	Validation []string
 }
 
 func CreateErrorTransport(transportError error) Transport {
