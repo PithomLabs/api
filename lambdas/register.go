@@ -39,5 +39,5 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp.WriteHeader(http.StatusOK)
+	http.Redirect(resp, req, redirectRegURL, http.StatusSeeOther)
 }
