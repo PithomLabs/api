@@ -48,7 +48,7 @@ func handleURLEncoded(values url.Values) sign.Transport {
 }
 
 func handleFormData(multiValues map[string][]string) sign.Transport {
-	var values url.Values
+	values := url.Values{}
 	for key, value := range multiValues {
 		if len(value) == 1 {
 			values.Set(key, value[0])

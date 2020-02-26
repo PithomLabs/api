@@ -4,12 +4,20 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/komfy/api)](https://goreportcard.com/report/github.com/komfy/api)
 ![GitHub last commit](https://img.shields.io/github/last-commit/komfy/api.svg?style=flat-square)
 
-Komfy API built with Go, GraphQL, PostgreSQL and GORM.
+Komfy API repository.
+
+> [Komfy](https://komfy.now.sh) is a protected social network without annoying trackers and context ads. It is currently in active development.
+
+## Stack
+
+* **PostgresSQL** database
+* **GraphQL** API
+* **GORM** ORM
 
 ## Useful links
 
-* [GraphQL API Prototype](https://app.graphqleditor.com/komfy/komfy-api)
-* [API Homepage](https://api.komfy.now.sh/)
+- [GraphQL API Prototype](https://app.graphqleditor.com/komfy-api/komfy-api)
+- [API Homepage](https://api.komfy.now.sh/)
 
 ## Local setup
 
