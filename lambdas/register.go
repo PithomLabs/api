@@ -8,7 +8,8 @@ import (
 	"github.com/komfy/api/internal/sign/register"
 )
 
-// RegisterHandler - handle registration request from frontend for /reg endpoint
+const redirectRegURL = "https://komfy.now.sh/verify_email"
+
 func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	resp.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	resp.Header().Set("Access-Control-Allow-Headers", "X-Captcha")
@@ -40,4 +41,5 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(resp, req, redirectRegURL, http.StatusSeeOther)
+
 }
