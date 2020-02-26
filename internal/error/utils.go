@@ -3,6 +3,7 @@ package error
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -12,19 +13,27 @@ func CreateErrorFromString(message string) error {
 	return errors.New(message)
 }
 
-func ShowOnBrowser(resp http.ResponseWriter, err error) {
-	resp.WriteHeader(http.StatusBadRequest)
+func CreateArgumentsError(arg string, argType string) error {
+	return CreateErrorFromString(
+		fmt.Sprintf(
+			ErrArgumentWrongTypeTemplate.Error(), arg, argType),
+	)
+}
 
+func ShowOnBrowser(resp http.ResponseWriter, err error) {
 	bitErr := []byte(err.Error())
+
+	resp.WriteHeader(http.StatusBadRequest)
 	resp.Write(bitErr)
 }
 
 func SendJSON(resp http.ResponseWriter, vErr []string) error {
-	bs, err := json.Marshal(vErr)
-	if err != nil {
-		return err
+	bs, mErr := json.Marshal(vErr)
+	if mErr != nil {
+		return mErr
 	}
+
 	resp.Header().Set("Content-Type", "application/json")
-	_, err = resp.Write(bs)
+	resp.Write(bs)
 	return nil
 }

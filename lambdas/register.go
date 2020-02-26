@@ -1,7 +1,6 @@
 package lambdas
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,21 +17,27 @@ func RegisterHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	rErr, validationError := register.NewUser(req)
-	if len(validationError) > 0 {
-		err := err.SendJSON(resp, validationError)
-		if err != nil {
+	// validationErrors is a string here
+	validationErrors, rErr := register.NewUser(req)
+	if len(validationErrors) > 0 {
+		// Show and log rErr error first so there is no
+		// WriteHeader duplicate
+		err.ShowOnBrowser(resp, rErr)
+		log.Println(rErr)
+
+		sjErr := err.SendJSON(resp, validationErrors)
+		if sjErr != nil {
+			log.Println(sjErr)
 			return
 		}
+		return
 	}
+
 	if rErr != nil {
 		err.ShowOnBrowser(resp, rErr)
 		log.Println(rErr)
 		return
 	}
 
-	http.WriteHeader(http.Success)
-
-	fmt.Fprint(resp, "Registration success")
-
+	resp.WriteHeader(http.StatusOK)
 }
