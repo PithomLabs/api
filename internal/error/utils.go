@@ -28,7 +28,6 @@ func ShowOnBrowser(resp http.ResponseWriter, err error) {
 }
 
 func SendJSON(resp http.ResponseWriter, vErr []string) error {
-<<<<<<< HEAD
 	bs, mErr := json.Marshal(vErr)
 	if mErr != nil {
 		return mErr
@@ -36,13 +35,5 @@ func SendJSON(resp http.ResponseWriter, vErr []string) error {
 
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Write(bs)
-=======
-	bs, err := json.Marshal(vErr)
-	if err != nil {
-		return err
-	}
-	resp.Header().Set("Content-Type", "application/json")
-	_, err = resp.Write(bs)
->>>>>>> master
 	return nil
 }
