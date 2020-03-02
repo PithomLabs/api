@@ -1,4 +1,4 @@
-# komfy/api
+# Komfy API
 
 [![Codacy](https://img.shields.io/codacy/grade/a4485f4982d54841930f0812b92f7c04.svg?style=flat-square)](https://app.codacy.com/project/komfy/api/dashboard)
 [![Go Report Card](https://goreportcard.com/badge/github.com/komfy/api)](https://goreportcard.com/report/github.com/komfy/api)
@@ -45,21 +45,10 @@ secret=JWT_SECRET
 
 Or use [`now secrets`](https://zeit.co/docs/v2/environment-variables-and-secrets)
 
-3. Install Taskfile and Air:
-
-```sh
-go get -u -v github.com/go-task/task/cmd/task
-curl -fLo ~/.local/bin/air \
-    https://raw.githubusercontent.com/cosmtrek/air/master/bin/linux/air
-chmod +x ~/.local/bin/air
-```
-
-Be sure that `~/.local/bin/air` is in your path.
-
-4. Run dev server
+3. Run dev server
 
 ```
-task dev
+bin/task dev
 ```
 
 ## Contributing
