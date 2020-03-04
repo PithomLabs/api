@@ -7,46 +7,59 @@ import (
 )
 
 // The type of function needed inside the privatefield function parameters
-type returnFunction func(context ContextProvider, token interface{}) (interface{}, error)
+type returnFunction func(token interface{}) (interface{}, error)
 
-func generalResolveFunc(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
-	// We get the ContextProvider and the jwt token
-	context, token, ctErr := getContextAndToken(parameters)
-	if ctErr != nil {
-		return nil, ctErr
+func resolvePublicField(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
+	context, token, cErr, tErr := getContextAndToken(parameters)
+	if cErr != nil {
+		return nil, cErr
 	}
 
-	// Here, it doesn't matter if the token is given or not,
-	// so we just pass it to the returnFunction
-	return fn(context, token)
+	if tErr != nil {
+		// If the token was empty then it was
+		// an empty requets but we shouldn't block it
+		// because we are in the resolvePublicField function
+		if context.Token == "" {
+			return fn(token)
+		}
+		// Else, it means the token wasn't valid and
+		// we should block the request
+		return nil, tErr
+	}
+
+	return fn(token)
 }
 
-// Allow us to privatise a gql field
-func privatiseField(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
-	// Get the context and token in order to use them
-	context, token, ctErr := getContextAndToken(parameters)
-	if ctErr != nil {
-		return nil, ctErr
+func resolvePrivateField(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
+	context, token, cErr, tErr := getContextAndToken(parameters)
+	if cErr != nil {
+		return nil, cErr
 	}
-	// If the context is private (which mean no token was given)
-	// then we return nothing, because the current field is private
+
+	if tErr != nil {
+		return nil, tErr
+	}
+	// HideInfos contains a boolean telling us if, or not,
+	// we should give the user those informations.
+	// Here we are in a private field, so we shoudln't give informations
+	// if HideInfos == true
 	if context.HideInfos {
 		return nil, nil
 	}
-	// Else we return what the returnFunction has to return normally
-	return fn(context, token)
+
+	return fn(token)
 }
 
-func getContextAndToken(parameters graphql.ResolveParams) (ContextProvider, interface{}, error) {
-	context, ok := parameters.Context.Value("ContextProvider").(ContextProvider)
+func getContextAndToken(parameters graphql.ResolveParams) (contextProvider, interface{}, error, error) {
+	context, ok := parameters.Context.Value("ContextProvider").(contextProvider)
 	if !ok {
-		return ContextProvider{}, nil, err.ErrContextProvider
+		return contextProvider{}, nil, err.ErrContextProvider, nil
 	}
 
 	token, jErr := jwt.IsValid(context.Token)
 	if jErr != nil {
-		return ContextProvider{}, nil, jErr
+		return context, nil, nil, jErr
 	}
 
-	return context, token, jErr
+	return context, token, nil, nil
 }

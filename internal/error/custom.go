@@ -14,6 +14,7 @@ var (
 	ErrTokenForgotten            = errors.New("token is missing")
 	ErrSigningMethod             = errors.New("signing method wasn't matching")
 	ErrTokenNotValid             = errors.New("token is not valid")
+	ErrTokenCouldntBeParse       = errors.New("token could not be parse by server")
 	ErrCaptchaHeaderMissing      = errors.New("the captcha header is missing")
 	ErrDigitsMissing             = errors.New("digits are missing")
 	ErrCaptchaInvalid            = errors.New("captcha is invalid, try again")
@@ -30,6 +31,7 @@ var (
 	ErrWrongSpecial              = errors.New("there is prohibited symbol on position")
 	ErrInDatabaseOccured         = errors.New("An error occured with database on server side")
 	ErrPasswordNotValid          = errors.New("given password misses criteria")
+	ErrServerSide                = errors.New("an error occured on server-side")
 	ErrValueMissingTemplate      = "sorry but you forgot ur %s"
 	ErrArgumentWrongTypeTemplate = errors.New("argument %s is of the wrong type, should be %s")
 )

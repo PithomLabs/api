@@ -5,13 +5,13 @@ import (
 )
 
 func IsValidUser(user *structs.User) (bool, error) {
-	users := []structs.User{}
-	cuErr := openDatabase.Instance.Where("username = ? AND email = ?", user.Username, user.Email).Find(&users).Error
+	nUsers := 0
+	cuErr := openDatabase.Instance.Table("users").Where("username = ? AND email = ?", user.Username, user.Email).Count(&nUsers).Error
 	if cuErr != nil {
 		return false, nil
 	}
 
-	return len(users) == 0, nil
+	return nUsers == 0, nil
 }
 
 func AddUser(user *structs.User) error {
