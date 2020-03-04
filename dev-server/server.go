@@ -14,9 +14,9 @@ import (
 
 func main() {
 	fmt.Println("Reading env variables from .env file...")
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
+	eErr := godotenv.Load(".env")
+	if eErr != nil {
+		log.Fatal(eErr)
 	}
 
 	if !initialize.IsOkay {

@@ -7,15 +7,20 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query: Root(),
-})
-
+// Do is a wrapper of the graphql-go's Do function
 func Do(request *http.Request) *graphql.Result {
+	var schema, sErr = graphql.NewSchema(graphql.SchemaConfig{
+		Query: root,
+	})
+
+	if sErr != nil {
+		panic(sErr)
+	}
+
 	token, tokenExists := request.Header["Authentication"]
 
 	// We use that struct in order to pass multiple context variables
-	cp := ContextProvider{
+	cp := contextProvider{
 		HideInfos: !tokenExists,
 		Token:     "",
 	}
