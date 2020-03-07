@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
@@ -12,7 +13,6 @@ func Do(request *http.Request) *graphql.Result {
 	var schema, sErr = graphql.NewSchema(graphql.SchemaConfig{
 		Query: root,
 	})
-
 	if sErr != nil {
 		panic(sErr)
 	}
@@ -29,9 +29,12 @@ func Do(request *http.Request) *graphql.Result {
 		cp.Token = token[0]
 	}
 
+	var graphQLInformations map[string]string
+	json.NewDecoder(request.Body).Decode(&graphQLInformations)
+
 	return graphql.Do(graphql.Params{
 		Schema:        schema,
-		RequestString: request.URL.Query().Get("query"),
+		RequestString: graphQLInformations["query"],
 		Context:       context.WithValue(context.Background(), "ContextProvider", cp),
 	})
 }

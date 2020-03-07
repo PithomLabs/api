@@ -15,8 +15,8 @@ func GetEntityByID(id, eType string) (*structs.Entity, error) {
 	return entity, nil
 }
 
-func GetAllEntitiesFromUser(uid, eType string) (*[]structs.Entity, error) {
-	entities := &[]structs.Entity{}
+func GetAllEntitiesFromUser(uid, eType string) (*[]*structs.Entity, error) {
+	entities := &[]*structs.Entity{}
 
 	gErr := openDatabase.Instance.Joins("JOIN users ON entities.user_id = users.id").Where("entities.user_id = ? AND entities.type = ?", uid, eType).Find(entities).Error
 	if gErr != nil {

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/friendsofgo/graphiql"
 	"github.com/joho/godotenv"
 
 	"github.com/komfy/api/internal/initialize"
@@ -26,6 +27,12 @@ func main() {
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
 
+	handler, err := graphiql.NewGraphiqlHandler("/graphql")
+	if err != nil {
+		panic(err)
+	}
+
+	http.Handle("/graphiql", handler)
 	http.HandleFunc("/", AddCORSOnLocal)
 	http.ListenAndServe(":8080", nil)
 

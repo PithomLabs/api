@@ -18,13 +18,13 @@ var settings *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.ID,
 		},
 		"show_likes": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 		"show_nsfw": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 		"nsfw_page": &graphql.Field{
-			Type: graphql.Boolean,
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 	},
 })
@@ -34,10 +34,10 @@ var user *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		// GQL default types
 		"id": &graphql.Field{
-			Type: graphql.ID,
+			Type: graphql.NewNonNull(graphql.ID),
 		},
 		"username": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"fullname": &graphql.Field{
 			Type: graphql.String,
@@ -46,10 +46,10 @@ var user *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 		"avatar_url": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"created_at": &graphql.Field{
-			Type: graphql.Int,
+			Type: graphql.NewNonNull(graphql.Int),
 		},
 		// Custom GQL types
 		"settings": &graphql.Field{
@@ -110,16 +110,16 @@ var content *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Content",
 	Fields: graphql.Fields{
 		"type": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"description": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"source": &graphql.Field{
 			Type: graphql.String,
 		},
-		"NSFW": &graphql.Field{
-			Type: graphql.Boolean,
+		"nsfw": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.Boolean),
 		},
 	},
 })
@@ -128,13 +128,29 @@ var entityUser *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Name: "EUser",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
-			Type: graphql.ID,
+			Type: graphql.NewNonNull(graphql.ID),
 		},
 		"username": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"avatar_url": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
+		},
+		"nsfw": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.Boolean),
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				return resolvePublicField(params,
+					func(token interface{}) (interface{}, error) {
+						user, ok := params.Source.(*structs.User)
+						if !ok {
+							log.Println("params.Source couldn't be parse as structs.User")
+							return nil, err.ErrServerSide
+						}
+
+						return user.Settings.NSFWPage, nil
+					},
+				)
+			},
 		},
 	},
 })
@@ -143,16 +159,16 @@ var entity *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Entity",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
-			Type: graphql.ID,
+			Type: graphql.NewNonNull(graphql.ID),
 		},
 		"created_at": &graphql.Field{
-			Type: graphql.Int,
+			Type: graphql.NewNonNull(graphql.Int),
 		},
 		"edited_at": &graphql.Field{
 			Type: graphql.Int,
 		},
 		"likes": &graphql.Field{
-			Type: graphql.Int,
+			Type: graphql.NewNonNull(graphql.Int),
 		},
 		"liked": &graphql.Field{
 			Type: graphql.Boolean,
@@ -165,15 +181,16 @@ var entity *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"inside": &graphql.Field{
-			Type: content,
+			Type: graphql.NewNonNull(content),
 		},
-		"user_infos": &graphql.Field{
-			Type: entityUser,
+		"author": &graphql.Field{
+			Type: graphql.NewNonNull(entityUser),
 			/* Resolve Function */
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				return resolvePublicField(params,
 					func(token interface{}) (interface{}, error) {
 						entity, ok := params.Source.(*structs.Entity)
+						log.Println(params.Source)
 						if !ok {
 							log.Println("params.Source couldn't be parse as structs.Entity")
 							return nil, err.ErrServerSide
