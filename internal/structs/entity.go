@@ -15,8 +15,8 @@ type Entity struct {
 
 // Content represent the inside of the post
 type Content struct {
-	Type        string `gorm:"column:content_type;default:'text'"`
-	Description string `gorm:"column:description"`
-	Source      string `gorm:"column:source"`
-	NSFW        bool   `gorm:"column:NSFW"`
+	Type   string `gorm:"column:content_type;default:'text'"`
+	Text   string `gorm:"column:text"`
+	Source string `gorm:"column:source"`
+	NSFW   bool   `gorm:"column:NSFW"`
 }

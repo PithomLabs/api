@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS entities (
     edited_at INT DEFAULT NULL,
 
     content_type CONTENT_TYPE NOT NULL DEFAULT 'text',
-    description TEXT NOT NULL,
+    text TEXT NOT NULL,
     source TEXT DEFAULT NULL,
     NSFW BOOLEAN NOT NULL DEFAULT FALSE,
     -- answer_of is not a primary key because it needs to be null

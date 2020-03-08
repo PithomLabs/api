@@ -12,7 +12,7 @@ import (
 )
 
 var settings *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Settings",
+	Name: "UserSettings",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
 			Type: graphql.ID,
@@ -112,7 +112,7 @@ var content *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		"type": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.String),
 		},
-		"description": &graphql.Field{
+		"text": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.String),
 		},
 		"source": &graphql.Field{
@@ -125,7 +125,7 @@ var content *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 })
 
 var entityUser *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
-	Name: "EUser",
+	Name: "UserInfos",
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.ID),
@@ -190,7 +190,6 @@ var entity *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 				return resolvePublicField(params,
 					func(token interface{}) (interface{}, error) {
 						entity, ok := params.Source.(*structs.Entity)
-						log.Println(params.Source)
 						if !ok {
 							log.Println("params.Source couldn't be parse as structs.Entity")
 							return nil, err.ErrServerSide
