@@ -9,6 +9,7 @@ require (
 	github.com/graphql-go/graphql v0.7.9
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
+	github.com/komfy/cloudinary v0.0.0-20200306221929-e9d7eda6a273
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )

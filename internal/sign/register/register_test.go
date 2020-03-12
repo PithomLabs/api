@@ -13,7 +13,7 @@ import (
 
 func TestExtractUserFromJson(t *testing.T) {
 	t.Run("Passing test with jsons", func(t *testing.T) {
-		expect := structs.User{1, "Koshqua", "Kind$OfPass123", "myemail@gmail.com", "", true, true, true, []structs.Post{}}
+		expect := structs.User{1, "Koshqua", "Kind$OfPass123", "myemail@gmail.com", "", "", "", 1233, true, structs.Settings{}}
 		reqBody, err := json.Marshal(expect)
 		if err != nil {
 			t.Errorf("Impossible to marshal json")
@@ -32,7 +32,7 @@ func TestExtractUserFromJson(t *testing.T) {
 		}
 	})
 	t.Run("Passing tests with UrlEncoded", func(t *testing.T) {
-		expect := structs.User{0, "Koshqua", "Kind$OfPass123", "myemail@gmail.com", "", false, false, false, nil}
+		expect := structs.User{1, "Koshqua", "Kind$OfPass123", "myemail@gmail.com", "", "", "", 1233, true, structs.Settings{}}
 		reqStr := "username=Koshqua&password=Kind$OfPass123&email=myemail@gmail.com"
 		req, err := http.NewRequest("POST", "https://localhost:3000/reg", bytes.NewBufferString(reqStr))
 		if err != nil {
