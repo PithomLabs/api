@@ -2,8 +2,8 @@ package structs
 
 // Entity struct represent the Posts and Comments
 type Entity struct {
-	ID     uint `gorm:"primary_key"`
-	UserID uint `gorm:"primary_key"`
+	ID     uint `gorm:"column:entity_id;primary_key"`
+	UserID uint
 	// This Type field correspond to the ENTITY_TYPE
 	Type      string  `gorm:"default:'post'"`
 	Inside    Content `gorm:"EMBEDDED"`
@@ -15,8 +15,18 @@ type Entity struct {
 
 // Content represent the inside of the post
 type Content struct {
-	Type   string `gorm:"column:content_type;default:'text'"`
-	Text   string `gorm:"column:text"`
-	Source string `gorm:"column:source"`
-	NSFW   bool   `gorm:"column:NSFW"`
+	Type   string  `gorm:"column:content_type;default:'text'"`
+	Text   string  `gorm:"column:text"`
+	NSFW   bool    `gorm:"column:NSFW"`
+	Source []Asset `gorm:"-"`
+}
+
+type Asset struct {
+	ID            uint `gorm:"column:asset_id;primary_key"`
+	Width         uint
+	Height        uint
+	RessourceType string `gorm:"column:ressource_type;default:'image'" json:"ressource_type"`
+	URL           string
+	SecureURL     string `gorm:"column:secure_url" json:"secure_url"`
+	CreatedAt     uint64 `gorm:"column:created_at" json:"created_at"`
 }

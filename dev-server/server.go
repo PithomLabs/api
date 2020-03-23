@@ -13,6 +13,8 @@ import (
 	"github.com/komfy/api/lambdas"
 )
 
+// TODO: Comment the whole API
+
 func main() {
 	fmt.Println("Reading env variables from .env file...")
 	eErr := godotenv.Load(".env")

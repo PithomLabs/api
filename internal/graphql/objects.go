@@ -106,6 +106,33 @@ var user *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var asset *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Asset",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.ID),
+		},
+		"width": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.Int),
+		},
+		"height": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.Int),
+		},
+		"ressource_type": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.String),
+		},
+		"url": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.String),
+		},
+		"secure_url": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.String),
+		},
+		"created_at": &graphql.Field{
+			Type: graphql.NewNonNull(graphql.String),
+		},
+	},
+})
+
 var content *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Content",
 	Fields: graphql.Fields{
@@ -116,7 +143,7 @@ var content *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.NewNonNull(graphql.String),
 		},
 		"source": &graphql.Field{
-			Type: graphql.String,
+			Type: graphql.NewList(asset),
 		},
 		"nsfw": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.Boolean),

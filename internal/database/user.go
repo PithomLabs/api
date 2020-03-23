@@ -62,7 +62,7 @@ func GetUserByName(username string) (*structs.User, error) {
 func GetUserByID(id string) (*structs.User, error) {
 	user := &structs.User{}
 	// SELECT * FROM users WHERE id = `id`
-	guErr := openDatabase.Instance.Where("id = ?", id).First(user).Error
+	guErr := openDatabase.Instance.Where("user_id = ?", id).First(user).Error
 	if guErr != nil {
 		return nil, guErr
 	}
