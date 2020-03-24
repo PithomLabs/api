@@ -118,7 +118,7 @@ var asset *graphql.Object = graphql.NewObject(graphql.ObjectConfig{
 		"height": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.Int),
 		},
-		"ressource_type": &graphql.Field{
+		"resource_type": &graphql.Field{
 			Type: graphql.NewNonNull(graphql.String),
 		},
 		"url": &graphql.Field{

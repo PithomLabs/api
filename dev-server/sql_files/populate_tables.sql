@@ -21,7 +21,7 @@ INSERT INTO settings(
 INSERT INTO assets (
     width,
     height,
-    ressource_type,
+    resource_type,
     url,
     secure_url,
     created_at

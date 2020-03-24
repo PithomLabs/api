@@ -22,11 +22,11 @@ type Content struct {
 }
 
 type Asset struct {
-	ID            uint `gorm:"column:asset_id;primary_key"`
-	Width         uint
-	Height        uint
-	RessourceType string `gorm:"column:ressource_type;default:'image'" json:"ressource_type"`
-	URL           string
-	SecureURL     string `gorm:"column:secure_url" json:"secure_url"`
-	CreatedAt     uint64 `gorm:"column:created_at" json:"created_at"`
+	ID           uint `gorm:"column:asset_id;primary_key"`
+	Width        uint
+	Height       uint
+	ResourceType string `gorm:"column:resource_type;default:'image'" json:"resource_type"`
+	URL          string
+	SecureURL    string `gorm:"column:secure_url" json:"secure_url"`
+	CreatedAt    uint64 `gorm:"column:created_at" json:"created_at"`
 }

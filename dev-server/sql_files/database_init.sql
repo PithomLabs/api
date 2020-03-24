@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 -- Custom enum based on https://cloudinary.com/documentation/image_upload_api_reference#optional_parameters
-CREATE TYPE RESSOURCE_TYPE AS ENUM (
+CREATE TYPE RESOURCE_TYPE AS ENUM (
     'text',
     'audio',
     'video',
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS assets (
     asset_id SERIAL PRIMARY KEY,
     width INT NOT NULL,
     height INT NOT NULL,
-    ressource_type RESSOURCE_TYPE NOT NULL DEFAULT 'image',
+    resource_type RESOURCE_TYPE NOT NULL DEFAULT 'image',
     url text NOT NULL,
     secure_url text NOT NULL,
     created_at INT NOT NULL
