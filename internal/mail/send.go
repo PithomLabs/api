@@ -9,9 +9,11 @@ import (
 	email "gopkg.in/gomail.v2"
 )
 
-const (
+var (
 	mailSubject string = "Komfy email verification"
-	mailBody    string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='https://api.komfy.now.sh/verify?verify_code=%v'>link</a>"
+
+	// HACK: yes, I know that this is shit, but it works without any Sprintf hacks
+	mailBody string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("base_url") + "/verify?verify_code=%v'>link</a>"
 )
 
 func Send(user *structs.User, sendChan chan sign.Transport) error {

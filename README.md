@@ -34,16 +34,7 @@ cd api
 go mod download
 ```
 
-3. Setup `.env`:
-
-```
-database=POSTGRES_DATABASE_URL
-user_email=EMAIL_THAT_WILL_SEND_CONFIRMATION_EMAILS
-pass_email=PASSWORD_FROM_EMAIL
-secret=JWT_SECRET
-```
-
-Or use [`now secrets`](https://zeit.co/docs/v2/environment-variables-and-secrets)
+3. Setup `.env` as shown in [.env.example](https://github.com/komfy/api/blob/master/.env.example)
 
 3. Run dev server
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/friendsofgo/graphiql"
 	"github.com/joho/godotenv"
@@ -16,8 +18,26 @@ import (
 // TODO: Comment the whole API
 
 func main() {
-	fmt.Println("Reading env variables from .env file...")
-	eErr := godotenv.Load(".env")
+
+	// find out if the server needs to be run in development mode
+	isDev := false
+	env := os.Getenv("APP_ENV")
+
+	if strings.Contains(env, "dev") {
+		isDev = true
+		fmt.Println("Running in development mode")
+	}
+
+	// load the .env file, it contains all settings
+	envFilePrefix := ""
+	if isDev {
+		envFilePrefix = ".dev"
+	}
+
+	envFile := ".env" + envFilePrefix
+
+	fmt.Printf("Reading env variables from %s...\n", envFile)
+	eErr := godotenv.Load(envFile)
 	if eErr != nil {
 		log.Fatal(eErr)
 	}
@@ -29,20 +49,25 @@ func main() {
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
 
-	handler, err := graphiql.NewGraphiqlHandler("/graphql")
-	if err != nil {
-		panic(err)
+	if isDev {
+		handler, err := graphiql.NewGraphiqlHandler("/graphql")
+		if err != nil {
+			panic(err)
+		}
+
+		http.Handle("/graphiql", handler)
+
+		fmt.Println("You can access GraphiQL at /graphiql")
 	}
 
-	http.Handle("/graphiql", handler)
-	http.HandleFunc("/", AddCORSOnLocal)
+	http.HandleFunc("/", mainHandler)
 	http.ListenAndServe(":8080", nil)
 
 }
 
-// AddCORSOnLocal enable CORS request from localhost:3000 when doing local development
-func AddCORSOnLocal(resp http.ResponseWriter, req *http.Request) {
-	netutils.EnableCORS(&resp, "http://localhost:3000")
+// mainHandler (was known as AddCORSOnLocal) handles everything
+func mainHandler(resp http.ResponseWriter, req *http.Request) {
+	netutils.EnableCORS(&resp, os.Getenv("base_url"))
 	// We suppress the '/' at the beginning of the path
 	path := req.URL.Path[1:]
 

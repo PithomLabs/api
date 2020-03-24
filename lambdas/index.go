@@ -3,6 +3,7 @@ package lambdas
 import (
 	"fmt"
 	"net/http"
+	"os"
 )
 
 // IndexHandler is the root page of API for displaying useful info
@@ -85,7 +86,7 @@ func IndexHandler(resp http.ResponseWriter, req *http.Request) {
 	
 	<h1>Komfy API root page.</h1>
 	<div>
-		<a href="https://api.komfy.now.sh/rand">Password generator</a> | 
+		<a href="`+os.Getenv("base_url")+`/rand">Password generator</a> | 
 		<a href="https://komfy.now.sh">Homepage</a> |
 
 		<a href="https://github.com/komfy/api">Github</a> |
