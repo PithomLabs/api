@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/friendsofgo/graphiql"
@@ -34,7 +35,13 @@ func main() {
 		envFilePrefix = ".dev"
 	}
 
-	envFile := ".env" + envFilePrefix
+	cwd, cErr := os.Getwd()
+	if cErr != nil {
+		// TODO: come up with a better way to handle this
+		panic(cErr)
+	}
+
+	envFile := path.Join(cwd, ".env"+envFilePrefix)
 
 	fmt.Printf("Reading env variables from %s...\n", envFile)
 	eErr := godotenv.Load(envFile)

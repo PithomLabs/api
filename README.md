@@ -39,7 +39,7 @@ go mod download
 3. Run dev server
 
 ```
-bin/task dev
+tools/task dev
 ```
 
 ## Contributing

@@ -19,5 +19,7 @@
 !.env.example
 
 tmp/
-.now
 .vscode
+
+# Ignore binaries
+bin/
