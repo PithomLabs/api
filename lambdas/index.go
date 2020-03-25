@@ -86,8 +86,8 @@ func IndexHandler(resp http.ResponseWriter, req *http.Request) {
 	
 	<h1>Komfy API root page.</h1>
 	<div>
-		<a href="`+os.Getenv("api_url")+`/rand">Password generator</a> | 
-		<a href="https://komfy.now.sh">Homepage</a> |
+		<a href="`+os.Getenv("API_URL")+`/rand">Password generator</a> | 
+		<a href="`+os.Getenv("FRONTEND_URL")+`">Homepage</a> |
 
 		<a href="https://github.com/komfy/api">Github</a> |
 		<a href="https://t.me/komfy">Telegram</a>

@@ -86,7 +86,7 @@ func main() {
 
 // mainHandler (was known as AddCORSOnLocal) handles everything
 func mainHandler(resp http.ResponseWriter, req *http.Request) {
-	netutils.EnableCORS(&resp, os.Getenv("frontend_url"))
+	netutils.EnableCORS(&resp, os.Getenv("FRONTEND_URL"))
 	// We suppress the '/' at the beginning of the path
 	path := req.URL.Path[1:]
 

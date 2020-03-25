@@ -11,14 +11,12 @@ import (
 
 var (
 	mailSubject string = "Komfy email verification"
-
-	// HACK: yes, I know that this is shit, but it works without any Sprintf hacks
-	mailBody string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("frontend") + "/verify?verify_code=%v'>link</a>"
+	mailBody    string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("FRONTEND_URL") + "/verify?verify_code=%v'>link</a>"
 )
 
 func Send(user *structs.User, sendChan chan sign.Transport) error {
-	from := os.Getenv("user_email")
-	pass := os.Getenv("pass_email")
+	from := os.Getenv("USER_EMAIL")
+	pass := os.Getenv("PASS_EMAIL")
 
 	msg := email.NewMessage()
 

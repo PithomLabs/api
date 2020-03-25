@@ -10,7 +10,7 @@ import (
 	"github.com/komfy/api/internal/sign/authenticate"
 )
 
-var redirectAuthURL = os.Getenv("redir_auth_url") + "/set_cookie?token=%s"
+var redirectAuthURL = os.Getenv("FRONTEND_URL") + "/set_cookie?token=%s"
 
 // AuthenticationHandler handle the /auth endpoint
 func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {

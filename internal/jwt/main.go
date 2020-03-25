@@ -14,7 +14,7 @@ func Create(user *structs.User) (string, error) {
 		"Username": user.Username,
 	})
 
-	strToken, err := token.SignedString([]byte(os.Getenv("secret")))
+	strToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return "", nil
 
@@ -35,7 +35,7 @@ func IsValid(token string) (interface{}, error) {
 			return nil, err.ErrSigningMethod
 		}
 
-		return []byte(os.Getenv("secret")), nil
+		return []byte(os.Getenv("JWT_SECRET")), nil
 
 	})
 

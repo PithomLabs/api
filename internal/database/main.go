@@ -22,7 +22,7 @@ func InitializeDatabaseInstance() error {
 }
 
 func open() (KomfyDB, error) {
-	db, dbErr := gorm.Open("postgres", os.Getenv("database"))
+	db, dbErr := gorm.Open("postgres", os.Getenv("DATABASE_URL"))
 	if dbErr != nil {
 		return KomfyDB{}, dbErr
 	}
