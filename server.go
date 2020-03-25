@@ -37,8 +37,8 @@ func main() {
 
 	cwd, cErr := os.Getwd()
 	if cErr != nil {
-		// TODO: come up with a better way to handle this
-		panic(cErr)
+		fmt.Println("Could not get the working directory, using the binary location instead")
+		cwd = ""
 	}
 
 	envFile := path.Join(cwd, ".env"+envFilePrefix)
@@ -46,15 +46,14 @@ func main() {
 	fmt.Printf("Reading env variables from %s...\n", envFile)
 	eErr := godotenv.Load(envFile)
 	if eErr != nil {
-		log.Fatal(eErr)
+		log.Printf("Could not read %s, relying on environment variables instead\n", envFile)
 	}
 
 	if !initialize.IsOkay {
 		initialize.TurnOkay()
 	}
 
-	fmt.Println("Done...")
-	fmt.Println("Server is running on port 8080...")
+	fmt.Println("Server is running on port 8080")
 
 	if isDev {
 		handler, err := graphiql.NewGraphiqlHandler("/graphql")
@@ -74,7 +73,7 @@ func main() {
 
 // mainHandler (was known as AddCORSOnLocal) handles everything
 func mainHandler(resp http.ResponseWriter, req *http.Request) {
-	netutils.EnableCORS(&resp, os.Getenv("base_url"))
+	netutils.EnableCORS(&resp, os.Getenv("frontend_url"))
 	// We suppress the '/' at the beginning of the path
 	path := req.URL.Path[1:]
 

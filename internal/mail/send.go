@@ -13,7 +13,7 @@ var (
 	mailSubject string = "Komfy email verification"
 
 	// HACK: yes, I know that this is shit, but it works without any Sprintf hacks
-	mailBody string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("base_url") + "/verify?verify_code=%v'>link</a>"
+	mailBody string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("frontend") + "/verify?verify_code=%v'>link</a>"
 )
 
 func Send(user *structs.User, sendChan chan sign.Transport) error {
