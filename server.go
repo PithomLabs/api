@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/friendsofgo/graphiql"
@@ -15,6 +16,8 @@ import (
 	"github.com/komfy/api/internal/netutils"
 	"github.com/komfy/api/lambdas"
 )
+
+const defaultPort = 8080
 
 // TODO: Comment the whole API
 
@@ -53,7 +56,17 @@ func main() {
 		initialize.TurnOkay()
 	}
 
-	fmt.Println("Server is running on port 8080")
+	port, aErr := strconv.Atoi(os.Getenv("PORT"))
+	if aErr != nil {
+		// only warn about this if we're in production
+		if !isDev {
+			log.Printf("Could not get the port, falling back to %d instead\n", defaultPort)
+		}
+
+		port = defaultPort
+	}
+
+	fmt.Printf("Server is running on port %d\n", port)
 
 	if isDev {
 		handler, err := graphiql.NewGraphiqlHandler("/graphql")
@@ -67,7 +80,7 @@ func main() {
 	}
 
 	http.HandleFunc("/", mainHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":"+strconv.Itoa(port), nil)
 
 }
 
