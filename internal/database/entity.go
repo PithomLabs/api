@@ -12,7 +12,7 @@ func GetEntityByID(id, eType string) (*structs.Entity, error) {
 		return nil, gErr
 	}
 
-	aErr := GetAssetsForPost(entity)
+	aErr := GetAssetsForEntity(entity)
 	if aErr != nil {
 		return nil, aErr
 	}
@@ -31,7 +31,7 @@ func GetAllEntitiesFromUser(uid, eType string) (*[]*structs.Entity, error) {
 
 	var aErr error
 	for _, entity := range *entities {
-		aErr = GetAssetsForPost(entity)
+		aErr = GetAssetsForEntity(entity)
 		if aErr != nil {
 			return nil, aErr
 		}
@@ -40,9 +40,15 @@ func GetAllEntitiesFromUser(uid, eType string) (*[]*structs.Entity, error) {
 	return entities, nil
 }
 
-func GetAssetsForPost(entity *structs.Entity) error {
-	// SELECT assets.* FROM entities JOIN contain ON contain.entity_id = entities.entity_id JOIN assets ON assets.asset_id = contain.asset_id WHERE entities.entity_id = `entity.ID`;
-	gErr := openDatabase.Instance.Table("entities").Joins("JOIN contain ON contain.entity_id = entities.entity_id").Joins("JOIN assets ON assets.asset_id = contain.asset_id").Where("contain.entity_id = ?", entity.ID).Select("assets.*").Find(&entity.Inside.Source).Error
+func GetAssetsForEntity(entity *structs.Entity) error {
+	// If the content type of the entity is text then we don't need
+	// to fetch the sources, because there aren't any
+	if entity.Inside.Type == "text" {
+		return nil
+	}
+
+	// SELECT assets.* FROM entities JOIN assets ON assets.entity_id = entities.entity_id WHERE entities.entity_id = `entity.ID`;
+	gErr := openDatabase.Instance.Table("entities").Joins("JOIN assets ON assets.entity_id = entities.entity_id").Where("assets.entity_id = ?", entity.ID).Select("assets.*").Find(&entity.Inside.Source).Error
 	if gErr != nil {
 		return gErr
 	}
