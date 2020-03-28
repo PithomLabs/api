@@ -22,19 +22,20 @@ func main() {
 		log.Fatal(eErr)
 	}
 
-	if !initialize.IsOkay {
-		initialize.TurnOkay()
+	iErr := initialize.TurnOkay()
+	if iErr != nil {
+		log.Println(iErr)
 	}
 
 	fmt.Println("Done...")
 	fmt.Println("Server is running on port 8080...")
 
-	handler, err := graphiql.NewGraphiqlHandler("/graphql")
+	giHandler, err := graphiql.NewGraphiqlHandler("/graphql")
 	if err != nil {
 		panic(err)
 	}
 
-	http.Handle("/graphiql", handler)
+	http.Handle("/graphiql", giHandler)
 	http.HandleFunc("/", AddCORSOnLocal)
 	http.ListenAndServe(":8080", nil)
 

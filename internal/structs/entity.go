@@ -10,7 +10,9 @@ type Entity struct {
 	Likes     uint
 	CreatedAt uint64 `gorm:"column:created_at" json:"created_at"`
 	EditedAt  uint64 `gorm:"column:edited_at" json:"edited_at"`
-	AnswerOf  uint   `gorm:"column:answer_of" json:"-"`
+	AnswerOf  uint   `gorm:"column:answer_of" json:"answer_of"`
+	// This is only used for recursivity and filtering
+	Depth uint `gorm:"-" json:"-"`
 }
 
 // Content represent the inside of the post

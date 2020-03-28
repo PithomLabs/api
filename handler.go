@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/komfy/api/internal/initialize"
@@ -15,7 +16,10 @@ func MainHandler(resp http.ResponseWriter, req *http.Request) {
 	netutils.EnableCORS(&resp, "https://komfy.now.sh")
 
 	if !initialize.IsOkay {
-		initialize.TurnOkay()
+		iErr := initialize.TurnOkay()
+		if iErr != nil {
+			log.Println(iErr)
+		}
 
 	}
 

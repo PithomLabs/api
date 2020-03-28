@@ -82,7 +82,7 @@ CREATE TYPE RESOURCE_TYPE AS ENUM (
 -- FK: entity_id 1---0/* entities.entity_id
 CREATE TABLE IF NOT EXISTS assets (
     asset_id SERIAL PRIMARY KEY,
-    entity_id INT REFERENCES entities(entity_id),
+    entity_id INT REFERENCES entities(entity_id) ON DELETE CASCADE,
     width INT NOT NULL,
     height INT NOT NULL,
     resource_type RESOURCE_TYPE NOT NULL DEFAULT 'image',

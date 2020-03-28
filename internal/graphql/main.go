@@ -8,15 +8,10 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+var Schema graphql.Schema
+
 // Do is a wrapper of the graphql-go's Do function
 func Do(request *http.Request) *graphql.Result {
-	var schema, sErr = graphql.NewSchema(graphql.SchemaConfig{
-		Query: root,
-	})
-	if sErr != nil {
-		panic(sErr)
-	}
-
 	token, tokenExists := request.Header["Authentication"]
 
 	// We use that struct in order to pass multiple context variables
@@ -33,7 +28,7 @@ func Do(request *http.Request) *graphql.Result {
 	json.NewDecoder(request.Body).Decode(&graphQLInformations)
 
 	return graphql.Do(graphql.Params{
-		Schema:        schema,
+		Schema:        Schema,
 		RequestString: graphQLInformations["query"],
 		Context:       context.WithValue(context.Background(), "ContextProvider", cp),
 	})
