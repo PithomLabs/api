@@ -7,10 +7,16 @@ import (
 )
 
 // The type of function needed inside the privatefield function parameters
-type returnFunction func(token interface{}) (interface{}, error)
+type returnFunction func(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error)
 
-func resolvePublicField(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
-	context, token, cErr, tErr := getContextAndToken(parameters)
+/*
+	resolvePublicField will parse params.Context, extract the token from it (if there is one to)
+	and will call fn using fnArgs as its arguments.
+
+	It will break if token is invalid.
+*/
+func resolvePublicField(params graphql.ResolveParams, fn returnFunction, fnArgs ...string) (interface{}, error) {
+	context, token, cErr, tErr := getContextAndToken(params)
 	if cErr != nil {
 		return nil, cErr
 	}
@@ -20,18 +26,24 @@ func resolvePublicField(parameters graphql.ResolveParams, fn returnFunction) (in
 		// an empty requets but we shouldn't block it
 		// because we are in the resolvePublicField function
 		if context.Token == "" {
-			return fn(token)
+			return fn(params, token, fnArgs...)
 		}
 		// Else, it means the token wasn't valid and
 		// we should block the request
 		return nil, tErr
 	}
 
-	return fn(token)
+	return fn(params, token, fnArgs...)
 }
 
-func resolvePrivateField(parameters graphql.ResolveParams, fn returnFunction) (interface{}, error) {
-	context, token, cErr, tErr := getContextAndToken(parameters)
+/*
+	resolvePrivateField will do the same as resolvePublicField
+	except it will break if token is empty, invalid or if context.HideInfos is set to true
+
+	If it succeeds, fn is called using fnArgs as its arguments
+*/
+func resolvePrivateField(params graphql.ResolveParams, fn returnFunction, fnArgs ...string) (interface{}, error) {
+	context, token, cErr, tErr := getContextAndToken(params)
 	if cErr != nil {
 		return nil, cErr
 	}
@@ -47,11 +59,11 @@ func resolvePrivateField(parameters graphql.ResolveParams, fn returnFunction) (i
 		return nil, nil
 	}
 
-	return fn(token)
+	return fn(params, token, fnArgs...)
 }
 
-func getContextAndToken(parameters graphql.ResolveParams) (contextProvider, interface{}, error, error) {
-	context, ok := parameters.Context.Value("ContextProvider").(contextProvider)
+func getContextAndToken(params graphql.ResolveParams) (contextProvider, interface{}, error, error) {
+	context, ok := params.Context.Value("ContextProvider").(contextProvider)
 	if !ok {
 		return contextProvider{}, nil, err.ErrContextProvider, nil
 	}

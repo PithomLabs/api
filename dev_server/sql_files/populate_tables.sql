@@ -64,14 +64,14 @@ INSERT INTO entities (
     2,
     1,
     'This is a comment.',
-    1594975999,
+    1594976030,
     'text',
     'comment'
 ), (
     2,
     5,
     'This is a comment with an image',
-    1594975999,
+    1594976160,
     'image',
     'comment'
 );
@@ -123,5 +123,5 @@ INSERT INTO assets (
     'image',
     'http://res.cloudinary.com/dlcfinrwj/image/upload/v1584973868/palms_sdw5gf.jpg',
     'https://res.cloudinary.com/dlcfinrwj/image/upload/v1584973868/palms_sdw5gf.jpg',
-    1584975010
+    1594976160
 );
