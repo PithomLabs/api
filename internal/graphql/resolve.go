@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/graphql-go/graphql"
 	"github.com/komfy/api/internal/database"
@@ -9,7 +10,7 @@ import (
 	"github.com/komfy/api/internal/structs"
 )
 
-// ============== returnFunction TYPE FUNCTIONS ==================
+// ==============> returnFunction TYPE FUNCTIONS <==================
 
 // ====> Resolve Public Field <======
 
@@ -18,7 +19,7 @@ import (
 
 	It needs as first args the entity type which can be "post" or "comment".
 */
-func userTypeEntitiesResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func userTypeEntitiesResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	// Made the choice of ignoring the cast's verification
 	user := params.Source.(*structs.User)
 
@@ -35,7 +36,7 @@ func userTypeEntitiesResolve(params graphql.ResolveParams, token interface{}, ar
 /*
 	userInfosTypeNsfwResolve will return `user.Settings.NSFWPage` coz `user.NSFW` doesn't actually exist.
 */
-func userInfosTypeNsfwResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func userInfosTypeNsfwResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	user := params.Source.(*structs.User)
 
 	return user.Settings.NSFWPage, nil
@@ -44,7 +45,7 @@ func userInfosTypeNsfwResolve(params graphql.ResolveParams, token interface{}, a
 /*
 	entityTypeAuthorResolve will return entity's user infos based on `structs.Entity.UserID`
 */
-func entityTypeAuthorResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func entityTypeAuthorResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	entity := params.Source.(*structs.Entity)
 
 	user, gErr := database.GetUserByID(entity.UserID)
@@ -61,7 +62,7 @@ func entityTypeAuthorResolve(params graphql.ResolveParams, token interface{}, ar
 
 	A depth of 0 will return as much comments as a depth of 1.
 */
-func entityTypeCommentsResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func entityTypeCommentsResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	depthLevel := params.Args["depth"].(int)
 	comments, rErr := database.GetRecursiveEntities(
 		params.Source.(*structs.Entity).ID,
@@ -76,7 +77,7 @@ func entityTypeCommentsResolve(params graphql.ResolveParams, token interface{}, 
 	return comments, nil
 }
 
-func rootTypeEntityResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func rootTypeEntityResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	idArg, idOk := params.Args["id"]
 	if idOk {
 		// We don't need to check cast result because GraphQL will return an error
@@ -95,7 +96,7 @@ func rootTypeEntityResolve(params graphql.ResolveParams, token interface{}, args
 	return nil, nil
 }
 
-func rootTypeUserResolve(params graphql.ResolveParams, token interface{}, fnArgs ...string) (interface{}, error) {
+func rootTypeUserResolve(params graphql.ResolveParams, token map[string]string, fnArgs ...string) (interface{}, error) {
 	idArg, idOk := params.Args["id"]
 	if idOk {
 		uid := idArg.(int)
@@ -125,7 +126,7 @@ func rootTypeUserResolve(params graphql.ResolveParams, token interface{}, fnArgs
 	return nil, nil
 }
 
-func rootTypeEntitiesResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
+func rootTypeEntitiesResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
 	numPostArg, uOk := params.Args["last"]
 	if uOk {
 		nPost := numPostArg.(int)
@@ -146,13 +147,37 @@ func rootTypeEntitiesResolve(params graphql.ResolveParams, token interface{}, ar
 
 /*
 	entityTypeLikedResolve will return true if the user,
-	which we can obtain using `token.UserID`, has liked the current entity.
+	which we can obtain using `token["ID"]`, has liked the current entity.
 */
-func entityTypeLikedResolve(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error) {
-	return nil, nil
+func entityTypeLikedResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
+	tokenUserID, cErr := strconv.Atoi(token["ID"])
+	if cErr != nil {
+		return nil, cErr
+	}
+
+	eid := params.Source.(*structs.Entity).ID
+	return database.IsEntityLikedBy(eid, uint(tokenUserID))
 }
 
-// ============== CLASSIC FUNCTIONS ==================
+/*
+	userTypeSettingsResolve will return the user's settings if the user,
+	which we can obtain using `token["ID"]`, as the same id as the one for which we are asking the settings.
+*/
+func userTypeSettingsResolve(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error) {
+	tokenUserID, cErr := strconv.Atoi(token["ID"])
+	if cErr != nil {
+		return nil, cErr
+	}
+
+	user := params.Source.(*structs.User)
+	if uint(tokenUserID) != user.ID {
+		return nil, err.ErrIDDoesntMatch
+	}
+
+	return &user.Settings, nil
+}
+
+// ==============> CLASSIC FUNCTIONS <==================
 
 /*
 	entityTypeAnswerOfResolve will check if `structs.Entity.AnswerOf` is equal to 0, if so

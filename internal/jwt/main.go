@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"os"
+	"strconv"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	err "github.com/komfy/api/internal/error"
@@ -46,11 +47,13 @@ func IsValid(token string) (interface{}, error) {
 
 	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok && parsedToken.Valid {
 		decodedtoken := make(map[string]string)
-		decodedtoken["username"] = claims["username"].(string)
-		return decodedtoken, nil
+		tokenID := int(claims["ID"].(float64))
 
+		decodedtoken["Username"] = claims["Username"].(string)
+		decodedtoken["ID"] = strconv.Itoa(tokenID)
+
+		return decodedtoken, nil
 	}
 
 	return nil, err.ErrTokenNotValid
-
 }

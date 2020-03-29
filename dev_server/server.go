@@ -9,7 +9,9 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/komfy/api/internal/initialize"
+	"github.com/komfy/api/internal/jwt"
 	"github.com/komfy/api/internal/netutils"
+	"github.com/komfy/api/internal/structs"
 	"github.com/komfy/api/lambdas"
 )
 
@@ -22,17 +24,28 @@ func main() {
 		log.Fatal(eErr)
 	}
 
+	fmt.Println("\nInitializing needed variables...")
 	iErr := initialize.TurnOkay()
 	if iErr != nil {
 		log.Println(iErr)
 	}
 
-	fmt.Println("Done...")
-	fmt.Println("Server is running on port 8080...")
+	fmt.Println("\nCreating a token (JWT) for tests...")
+	token, tErr := jwt.Create(&structs.User{
+		ID:       1,
+		Username: "Komfy",
+	})
+	if tErr != nil {
+		log.Fatal(tErr)
+	}
 
-	giHandler, err := graphiql.NewGraphiqlHandler("/graphql")
-	if err != nil {
-		panic(err)
+	fmt.Printf("Token has been generated: \n%s\n\n", token)
+
+	fmt.Println("Done...", "Server is running on port 8080...")
+
+	giHandler, giErr := graphiql.NewGraphiqlHandler("/graphql")
+	if giErr != nil {
+		log.Fatal(giErr)
 	}
 
 	http.Handle("/graphiql", giHandler)

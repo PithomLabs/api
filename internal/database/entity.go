@@ -22,9 +22,8 @@ func GetEntityByID(id uint, eType string) (*structs.Entity, error) {
 
 func GetAllEntitiesFromUser(uid uint, eType string) (*[]*structs.Entity, error) {
 	entities := &[]*structs.Entity{}
-	// TODO: Change Join to Natural Join
-	// TODO: Add the SQL raw query
-	gErr := openDatabase.Instance.Joins("JOIN users ON entities.user_id = users.user_id").Where("entities.user_id = ? AND entities.type = ?", uid, eType).Find(entities).Error
+	// SELECT entities.* FROM entities JOIN users on entities.user_id = users.user_id WHERE entities.user_id = `uid` AND entities.type = `eType`
+	gErr := openDatabase.Instance.Joins("JOIN users on entities.user_id = users.user_id").Where("entities.user_id = ? AND entities.type = ?", uid, eType).Select("entities.*").Find(entities).Error
 	if gErr != nil {
 		return nil, gErr
 	}
@@ -56,7 +55,7 @@ func GetAssetsForEntity(entity *structs.Entity) error {
 	return nil
 }
 
-func UserLikedEntity(uid, eid uint) (bool, error) {
+func IsEntityLikedBy(eid, uid uint) (bool, error) {
 	count := 0
 	openDatabase.Instance.Table("likes").Where("user_id = ? and entity_id = ?", uid, eid).Count(&count)
 

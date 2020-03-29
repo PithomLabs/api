@@ -125,3 +125,20 @@ INSERT INTO assets (
     'https://res.cloudinary.com/dlcfinrwj/image/upload/v1584973868/palms_sdw5gf.jpg',
     1594976160
 );
+
+INSERT INTO likes (
+    user_id,
+    entity_id
+) VALUES (
+    1,
+    5
+), (
+    1,
+    6
+), (
+    2,
+    3
+), (
+    2,
+    4
+);

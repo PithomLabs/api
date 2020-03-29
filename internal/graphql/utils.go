@@ -7,7 +7,7 @@ import (
 )
 
 // The type of function needed inside the privatefield function parameters
-type returnFunction func(params graphql.ResolveParams, token interface{}, args ...string) (interface{}, error)
+type returnFunction func(params graphql.ResolveParams, token map[string]string, args ...string) (interface{}, error)
 
 /*
 	resolvePublicField will parse params.Context, extract the token from it (if there is one to)
@@ -62,7 +62,7 @@ func resolvePrivateField(params graphql.ResolveParams, fn returnFunction, fnArgs
 	return fn(params, token, fnArgs...)
 }
 
-func getContextAndToken(params graphql.ResolveParams) (contextProvider, interface{}, error, error) {
+func getContextAndToken(params graphql.ResolveParams) (contextProvider, map[string]string, error, error) {
 	context, ok := params.Context.Value("ContextProvider").(contextProvider)
 	if !ok {
 		return contextProvider{}, nil, err.ErrContextProvider, nil
@@ -73,5 +73,5 @@ func getContextAndToken(params graphql.ResolveParams) (contextProvider, interfac
 		return context, nil, nil, jErr
 	}
 
-	return context, token, nil, nil
+	return context, token.(map[string]string), nil, nil
 }

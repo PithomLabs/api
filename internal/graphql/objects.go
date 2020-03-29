@@ -52,6 +52,13 @@ func user() *graphql.Object {
 			// TODO: Make settings a private field
 			"settings": &graphql.Field{
 				Type: settings(),
+				/* Resolve Function */
+				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+					return resolvePrivateField(
+						params,
+						userTypeSettingsResolve,
+					)
+				},
 			},
 			"posts": &graphql.Field{
 				Type: graphql.NewList(entity()),
@@ -181,8 +188,7 @@ func entity() *graphql.Object {
 					},
 				},
 				"answer_of": &graphql.Field{
-					Type: graphql.Int,
-					// TODO: Make this cleaner and do all the required checks
+					Type:    graphql.Int,
 					Resolve: entityTypeAnswerOfResolve,
 				},
 				"inside": &graphql.Field{
