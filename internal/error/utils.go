@@ -3,7 +3,6 @@ package error
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
@@ -11,13 +10,6 @@ import (
 // have for message the given message
 func CreateErrorFromString(message string) error {
 	return errors.New(message)
-}
-
-func CreateArgumentsError(arg string, argType string) error {
-	return CreateErrorFromString(
-		fmt.Sprintf(
-			ErrArgumentWrongTypeTemplate.Error(), arg, argType),
-	)
 }
 
 func ShowOnBrowser(resp http.ResponseWriter, err error) {

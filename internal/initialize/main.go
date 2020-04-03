@@ -1,8 +1,10 @@
 package initialize
 
 import (
+	ggo "github.com/graphql-go/graphql"
 	"github.com/komfy/api/internal/captcha"
 	"github.com/komfy/api/internal/database"
+	"github.com/komfy/api/internal/graphql"
 	"github.com/komfy/api/internal/password"
 )
 
@@ -21,6 +23,14 @@ func TurnOkay() error {
 	pErr := password.GenerateWordSlice()
 	if pErr != nil {
 		return pErr
+	}
+
+	var sErr error
+	graphql.Schema, sErr = ggo.NewSchema(ggo.SchemaConfig{
+		Query: graphql.Root(),
+	})
+	if sErr != nil {
+		return sErr
 	}
 
 	return nil
