@@ -28,6 +28,8 @@ git clone https://github.com/komfy/api.git
 cd api
 ```
 
+2. Setup [Task](https://taskfile.dev) as shown [here](https://taskfile.dev/#/installation)
+
 2. Install go modules
 
 ```sh
