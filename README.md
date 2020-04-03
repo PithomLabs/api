@@ -28,7 +28,7 @@ git clone https://github.com/komfy/api.git
 cd api
 ```
 
-2. Setup [Task](https://taskfile.dev) as shown [here](https://taskfile.dev/#/installation)
+2. Setup [Task](https://taskfile.dev) as shown [here](https://taskfile.dev/#/installation) 
 
 2. Install go modules
 
@@ -36,12 +36,12 @@ cd api
 go mod download
 ```
 
-3. Setup `.env` as shown in [.env.example](https://github.com/komfy/api/blob/master/.env.example)
+3. Setup `.env` as shown in [.env.example](https://github.com/komfy/api/blob/master/.env.example) 
 
 3. Run dev server
 
 ```
-tools/task dev
+task -w dev
 ```
 
 ## Contributing
