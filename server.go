@@ -7,7 +7,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"strings"
 
 	"github.com/friendsofgo/graphiql"
 	"github.com/joho/godotenv"
@@ -24,11 +23,9 @@ const defaultPort = 8080
 func main() {
 
 	// find out if the server needs to be run in development mode
-	isDev := false
-	env := os.Getenv("APP_ENV")
+	isDev := netutils.IsDev()
 
-	if strings.Contains(env, "dev") {
-		isDev = true
+	if isDev {
 		fmt.Println("Running in development mode")
 	}
 
