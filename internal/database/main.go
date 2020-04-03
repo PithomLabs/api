@@ -37,8 +37,6 @@ func open() (KomfyDB, error) {
 		dbURL.RawQuery = dbURL.RawQuery + "&sslmode=disable"
 	}
 
-	fmt.Println(dbURL.String())
-
 	db, dbErr := gorm.Open("postgres", dbURL.String())
 	if dbErr != nil {
 		return KomfyDB{}, dbErr
