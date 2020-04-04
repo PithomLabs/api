@@ -21,34 +21,27 @@ Komfy API repository.
 
 ## Local setup
 
-1. Clone repository
+1. Clone repository 
 
 ```sh
 git clone https://github.com/komfy/api.git
 cd api
 ```
 
-2. Install go modules
+2. Setup [Task](https://taskfile.dev) as shown [here](https://taskfile.dev/#/installation) 
+
+3. Install go modules
 
 ```sh
 go mod download
 ```
 
-3. Setup `.env`:
+4. Setup `.env` as shown in [.env.example](https://github.com/komfy/api/blob/master/.env.example) 
+
+5. Run dev server 
 
 ```
-database=POSTGRES_DATABASE_URL
-user_email=EMAIL_THAT_WILL_SEND_CONFIRMATION_EMAILS
-pass_email=PASSWORD_FROM_EMAIL
-secret=JWT_SECRET
-```
-
-Or use [`now secrets`](https://zeit.co/docs/v2/environment-variables-and-secrets)
-
-3. Run dev server
-
-```
-bin/task dev
+task -w dev
 ```
 
 ## Contributing

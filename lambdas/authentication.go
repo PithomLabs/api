@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	err "github.com/komfy/api/internal/error"
 	"github.com/komfy/api/internal/sign/authenticate"
 )
 
-const redirectAuthURL = "https://komfy.now.sh/set_cookie?token=%s"
+var redirectAuthURL = os.Getenv("FRONTEND_URL") + "/set_cookie?token=%s"
 
 // AuthenticationHandler handle the /auth endpoint
 func AuthenticationHandler(resp http.ResponseWriter, req *http.Request) {
