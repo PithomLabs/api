@@ -64,7 +64,7 @@ func main() {
 
 	var eErr error
 	for _, envFile := range envFiles {
-		eErr := godotenv.Load(envFile)
+		eErr = godotenv.Load(envFile)
 		if eErr != nil {
 			fmt.Printf("  --> The file %s can't be read... Trying next possibility\n", envFile)
 			continue
@@ -73,6 +73,7 @@ func main() {
 		break
 	}
 	if eErr != nil {
+		fmt.Println()
 		log.Fatal("No env files were able to be read, please create one following .env.example\n\n")
 	}
 
@@ -85,8 +86,9 @@ func main() {
 		if iErrs != nil {
 			fmt.Println("Errors occured during initialization:")
 			for _, iErr := range iErrs {
-				fmt.Printf("  --> %s\n\n", iErr.Error())
+				fmt.Printf("  --> %s\n", iErr.Error())
 			}
+			fmt.Println()
 		}
 	}
 
