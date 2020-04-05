@@ -9,14 +9,14 @@ import (
 	email "gopkg.in/gomail.v2"
 )
 
-var (
+const (
 	mailSubject string = "Komfy email verification"
-	mailBody    string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='" + os.Getenv("FRONTEND_URL") + "/verify?verify_code=%v'>link</a>"
+	mailBody    string = "<h2>Komfy email verification</h2> Confirm email by clicking on this <a href='https://api.komfy.now.sh/verify?verify_code=%v'>link</a>"
 )
 
 func Send(user *structs.User, sendChan chan sign.Transport) error {
-	from := os.Getenv("USER_EMAIL")
-	pass := os.Getenv("PASS_EMAIL")
+	from := os.Getenv("user_email")
+	pass := os.Getenv("pass_email")
 
 	msg := email.NewMessage()
 

@@ -1,0 +1,27 @@
+{
+	"version": 2,
+	"name": "api",
+	"scope": "komfy",
+	"builds": [
+		{
+			"src": "handler.go",
+			"use": "@now/go"
+		}
+	], "routes": [
+		{
+			"src": "/(.*)", 
+			"dest": "handler.go"
+		}
+	],
+	"build": {
+		"env": {
+			"GO111MODULE": "on"
+		}
+	},
+	"env": {
+		"database": "@database",
+		"user_email": "@user_email",
+		"pass_email": "@pass_email",
+		"secret": "@secret"
+	}
+}

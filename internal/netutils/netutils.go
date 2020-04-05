@@ -1,24 +1,6 @@
 package netutils
 
-import (
-	"os"
-	"strings"
-
-	"net/http"
-)
-
-// IsDev checks if the application runs in a development environment
-func IsDev() bool {
-	// find out if the server needs to be run in development mode
-	isDev := false
-	env := os.Getenv("APP_ENV")
-
-	if strings.Contains(env, "dev") {
-		isDev = true
-	}
-
-	return isDev
-}
+import "net/http"
 
 // EnableCORS add an header to the ResponseWriter
 // in order to allow the current handler to receive
