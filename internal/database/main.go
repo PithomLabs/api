@@ -3,16 +3,15 @@ package database
 import (
 	"os"
 
-	"github.com/jinzhu/gorm"
-
 	// Postgresql driver
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 var openDatabase KomfyDB
 
-func InitializeDatabaseInstance() error {
-	tempDB, oErr := open()
+func InitializeDatabaseInstance(isDev bool) error {
+	tempDB, oErr := open(isDev)
 	if oErr != nil {
 		return oErr
 	}
@@ -21,8 +20,13 @@ func InitializeDatabaseInstance() error {
 	return nil
 }
 
-func open() (KomfyDB, error) {
-	db, dbErr := gorm.Open("postgres", os.Getenv("database"))
+func open(isDev bool) (KomfyDB, error) {
+	dbURL := os.Getenv("DATABASE_URL")
+	if isDev {
+		dbURL += "?sslmode=disable"
+	}
+
+	db, dbErr := gorm.Open("postgres", dbURL)
 	if dbErr != nil {
 		return KomfyDB{}, dbErr
 	}
