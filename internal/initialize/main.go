@@ -1,6 +1,9 @@
 package initialize
 
 import (
+	"math/rand"
+	"time"
+
 	ggo "github.com/graphql-go/graphql"
 	"github.com/komfy/api/internal/captcha"
 	"github.com/komfy/api/internal/database"
@@ -10,19 +13,24 @@ import (
 
 var IsOkay bool
 
-func TurnOkay() error {
+func TurnOkay(isDev bool) []error {
+	var iErrs []error
+
 	IsOkay = true
+	// Gives to rand.Seed an unique value so rand's function will
+	// generate different pseudo-random numbers
+	rand.Seed(time.Now().UnixNano())
 
 	captcha.InitializeMemoryStorage()
 
-	dErr := database.InitializeDatabaseInstance()
+	dErr := database.InitializeDatabaseInstance(isDev)
 	if dErr != nil {
-		return dErr
+		iErrs = append(iErrs, iErrs...)
 	}
 
 	pErr := password.GenerateWordSlice()
 	if pErr != nil {
-		return pErr
+		iErrs = append(iErrs, iErrs...)
 	}
 
 	var sErr error
@@ -30,7 +38,7 @@ func TurnOkay() error {
 		Query: graphql.Root(),
 	})
 	if sErr != nil {
-		return sErr
+		iErrs = append(iErrs, iErrs...)
 	}
 
 	return nil

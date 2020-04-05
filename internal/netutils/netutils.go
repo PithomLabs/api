@@ -9,15 +9,8 @@ import (
 
 // IsDev checks if the application runs in a development environment
 func IsDev() bool {
-	// find out if the server needs to be run in development mode
-	isDev := false
 	env := os.Getenv("APP_ENV")
-
-	if strings.Contains(env, "dev") {
-		isDev = true
-	}
-
-	return isDev
+	return strings.Contains(env, "dev")
 }
 
 // EnableCORS add an header to the ResponseWriter

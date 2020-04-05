@@ -1,22 +1,17 @@
 package database
 
 import (
-	"net/url"
 	"os"
 
-	"github.com/jinzhu/gorm"
-
 	// Postgresql driver
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-
-	"github.com/komfy/api/internal/netutils"
-	"github.com/komfy/api/internal/structs"
 )
 
 var openDatabase KomfyDB
 
-func InitializeDatabaseInstance() error {
-	tempDB, oErr := open()
+func InitializeDatabaseInstance(isDev bool) error {
+	tempDB, oErr := open(isDev)
 	if oErr != nil {
 		return oErr
 	}
@@ -25,25 +20,18 @@ func InitializeDatabaseInstance() error {
 	return nil
 }
 
-func open() (KomfyDB, error) {
-	dbURL, uErr := url.Parse(os.Getenv("DATABASE_URL"))
-	if uErr != nil {
-		return KomfyDB{}, uErr
-	}
-
-	isDev := netutils.IsDev()
+func open(isDev bool) (KomfyDB, error) {
+	dbURL := os.Getenv("DATABASE_URL")
 	if isDev {
-		dbURL.RawQuery = dbURL.RawQuery + "&sslmode=disable"
+		dbURL += "?sslmode=disable"
 	}
 
-	db, dbErr := gorm.Open("postgres", dbURL.String())
+	db, dbErr := gorm.Open("postgres", dbURL)
 	if dbErr != nil {
 		return KomfyDB{}, dbErr
 	}
 
 	db.DB().SetMaxOpenConns(1)
-
-	db.AutoMigrate(&structs.User{}, &structs.Settings{}, &structs.Entity{}, &structs.Asset{}, &structs.Content{})
 
 	return KomfyDB{
 		Instance: db,

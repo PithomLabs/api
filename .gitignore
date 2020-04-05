@@ -13,6 +13,7 @@
 
 # Ignore the .env files which contain important infos
 *.env.*
+.env
 *.build
 
 # But don't ignore .env.example, which is an example .env file
