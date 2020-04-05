@@ -14,7 +14,7 @@ import (
 var IsOkay bool
 
 func TurnOkay(isDev bool) []error {
-	var iErrs []error
+	var iErrs []error = nil
 
 	IsOkay = true
 	// Gives to rand.Seed an unique value so rand's function will
@@ -25,12 +25,12 @@ func TurnOkay(isDev bool) []error {
 
 	dErr := database.InitializeDatabaseInstance(isDev)
 	if dErr != nil {
-		iErrs = append(iErrs, iErrs...)
+		iErrs = append(iErrs, dErr)
 	}
 
 	pErr := password.GenerateWordSlice()
 	if pErr != nil {
-		iErrs = append(iErrs, iErrs...)
+		iErrs = append(iErrs, pErr)
 	}
 
 	var sErr error
@@ -38,8 +38,8 @@ func TurnOkay(isDev bool) []error {
 		Query: graphql.Root(),
 	})
 	if sErr != nil {
-		iErrs = append(iErrs, iErrs...)
+		iErrs = append(iErrs, sErr)
 	}
 
-	return nil
+	return iErrs
 }
