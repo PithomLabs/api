@@ -17,7 +17,7 @@ Komfy API repository.
 ## Useful links
 
 - [GraphQL API Prototype](https://app.graphqleditor.com/komfy-api/komfy-api)
-- [API Homepage](https://api.komfy.now.sh/)
+- [API Homepage](https://komfy.herokuapp.com/)
 
 ## Local setup
 
