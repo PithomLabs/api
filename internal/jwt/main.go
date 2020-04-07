@@ -10,10 +10,11 @@ import (
 )
 
 func Create(user *structs.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+	claims := jwt.MapClaims{
 		"ID":       user.ID,
 		"Username": user.Username,
-	})
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
 	strToken, err := token.SignedString([]byte(os.Getenv("secret")))
 	if err != nil {
@@ -22,7 +23,6 @@ func Create(user *structs.User) (string, error) {
 	}
 
 	return strToken, nil
-
 }
 
 func IsValid(token string) (interface{}, error) {

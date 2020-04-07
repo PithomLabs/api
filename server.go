@@ -139,7 +139,8 @@ func mainHandler(resp http.ResponseWriter, req *http.Request) {
 
 	case "captcha/verify":
 		lambdas.VerifyCaptchaHandler(resp, req)
-
+	case "delete_myself":
+		lambdas.DeleteUserHandler(resp, req)
 	default:
 		lambdas.IndexHandler(resp, req)
 
