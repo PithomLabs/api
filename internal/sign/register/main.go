@@ -50,7 +50,7 @@ func NewUser(request *http.Request) ([]string, error) {
 
 	go isValidUser(infos.User, validChan)
 
-	hashed, hErr := hashPassword(tempPass)
+	hashed, hErr := HashPassword(tempPass)
 	tempPass = ""
 	if hErr != nil {
 		return nil, hErr

@@ -148,7 +148,7 @@ func isValidUser(user *structs.User, validChan chan<- sign.Transport) {
 
 }
 
-func hashPassword(pass string) (string, error) {
+func HashPassword(pass string) (string, error) {
 	bytePass, hErr := bc.GenerateFromPassword([]byte(pass), passwordCost)
 	if hErr != nil {
 		return "", err.ErrHashing
