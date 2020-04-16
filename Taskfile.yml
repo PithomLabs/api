@@ -1,6 +1,22 @@
 version: '2'
 
 tasks:
-  dev:
+  build:
+    sources:
+      - server.go
+      - '**/*.go'
     cmds:
-      - bin/air -c air.conf
+      - go build -o bin/server
+   
+  dev:
+    deps:
+      - build
+    env:
+      APP_ENV: dev
+    cmds:
+      - tmp/server
+
+  default:
+    deps:
+      - build
+

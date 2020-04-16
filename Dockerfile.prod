@@ -1,0 +1,17 @@
+FROM golang:1-alpine AS build
+
+COPY go.mod go.sum /app/
+WORKDIR /app
+RUN go mod download
+
+COPY . /app
+RUN apk add --no-cache curl
+RUN curl -sL https://taskfile.dev/install.sh | sh
+RUN ./bin/task
+
+FROM alpine:3.11
+RUN apk add --no-cache libc6-compat
+COPY --from=build /app/bin/server /app/server
+ENTRYPOINT ["/app/server"]
+CMD []
+
