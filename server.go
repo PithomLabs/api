@@ -72,7 +72,7 @@ func main() {
 		fmt.Printf("  --> Environment variables were read from the file %s\n\n", envFile)
 		break
 	}
-	if eErr != nil {
+	if isDev && eErr != nil {
 		fmt.Println()
 		log.Fatal("No env files were able to be read, please create one following .env.example\n\n")
 	}
