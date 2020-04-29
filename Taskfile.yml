@@ -1,6 +1,11 @@
-version: '2'
+version: "2"
 
 tasks:
   dev:
     cmds:
       - bin/air -c air.conf
+  bootstrap:
+    cmds:
+      - sudo -u postgres createdb komfy
+      - psql -f sql_files/create_db.sql komfy komfy
+      - psql -f sql_files/populate_db.sql
