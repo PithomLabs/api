@@ -1,11 +1,25 @@
-version: "2"
+version: '2'
 
 tasks:
-  dev:
+  build:
+    sources:
+      - server.go
+      - '**/*.go'
     cmds:
-      - bin/air -c air.conf
+      - go build -o tmp/server
+  dev:
+    deps:
+      - build
+    env:
+      APP_ENV: dev
+    cmds:
+      - tmp/server
   bootstrap:
     cmds:
       - sudo -u postgres createdb komfy
       - psql -f sql_files/create_db.sql komfy komfy
       - psql -f sql_files/populate_db.sql
+
+  default:
+    deps:
+      - build
