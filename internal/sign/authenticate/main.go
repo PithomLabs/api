@@ -43,7 +43,12 @@ func User(req *http.Request) sign.Transport {
 		}
 
 		userTransport = handleFormData(req.MultipartForm.Value)
+	}
 
+	// If the extraction failed, return the sign.Transport
+	// which should contain an error
+	if userTransport.Error != nil {
+		return userTransport
 	}
 
 	checkChan := make(chan sign.Transport)
