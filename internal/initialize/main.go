@@ -1,10 +1,11 @@
 package initialize
 
 import (
+	"io/ioutil"
 	"math/rand"
 	"time"
 
-	ggo "github.com/graphql-go/graphql"
+	ggo "github.com/graph-gophers/graphql-go"
 	"github.com/komfy/api/internal/captcha"
 	"github.com/komfy/api/internal/database"
 	"github.com/komfy/api/internal/graphql"
@@ -33,10 +34,12 @@ func TurnOkay(isDev bool) []error {
 		iErrs = append(iErrs, pErr)
 	}
 
+	schema, err := ioutil.ReadFile("./internal/graphql/schema.graphql")
+	if err != nil {
+		iErrs = append(iErrs, err)
+	}
 	var sErr error
-	graphql.Schema, sErr = ggo.NewSchema(ggo.SchemaConfig{
-		Query: graphql.Root(),
-	})
+	graphql.Schema, sErr = ggo.ParseSchema(string(schema), &graphql.RootResolver{})
 	if sErr != nil {
 		iErrs = append(iErrs, sErr)
 	}

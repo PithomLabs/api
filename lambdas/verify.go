@@ -3,8 +3,8 @@ package lambdas
 import (
 	"log"
 	"net/http"
-	"strconv"
 
+	"github.com/graph-gophers/graphql-go"
 	err "github.com/komfy/api/internal/error"
 	"github.com/komfy/api/internal/mail"
 )
@@ -13,14 +13,7 @@ import (
 func VerifyHandler(resp http.ResponseWriter, req *http.Request) {
 	verificationCode := req.URL.Query().Get("verify_code")
 
-	code, cErr := strconv.ParseUint(verificationCode, 10, 64)
-	if cErr != nil {
-		err.ShowOnBrowser(resp, cErr)
-		log.Println(cErr)
-		return
-	}
-
-	vErr := mail.Verify(uint(code))
+	vErr := mail.Verify(graphql.ID(verificationCode))
 	if vErr != nil {
 		err.ShowOnBrowser(resp, vErr)
 		log.Println(vErr)

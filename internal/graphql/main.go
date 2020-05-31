@@ -5,31 +5,20 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/graphql-go/graphql"
+	"github.com/graph-gophers/graphql-go"
 )
 
-var Schema graphql.Schema
+//Schema respresents graphql schema
+//Schema is parsed from internal/initialize/main.go
+var Schema *graphql.Schema
 
-// Do is a wrapper of the graphql-go's Do function
-func Do(request *http.Request) *graphql.Result {
-	token, tokenExists := request.Header["Authentication"]
-
-	// We use that struct in order to pass multiple context variables
-	cp := contextProvider{
-		HideInfos: !tokenExists,
-		Token:     "",
+//ExecuteQuery is a wrapper on schema.Exec() method
+func ExecuteQuery(req *http.Request) ([]byte, error) {
+	query := req.URL.Query().Get("query")
+	resp := Schema.Exec(context.Background(), query, "", nil)
+	json, err := json.MarshalIndent(resp, "", "\t")
+	if err != nil {
+		return []byte{}, err
 	}
-
-	if tokenExists {
-		cp.Token = token[0]
-	}
-
-	var graphQLInformations map[string]string
-	json.NewDecoder(request.Body).Decode(&graphQLInformations)
-
-	return graphql.Do(graphql.Params{
-		Schema:        Schema,
-		RequestString: graphQLInformations["query"],
-		Context:       context.WithValue(context.Background(), "ContextProvider", cp),
-	})
+	return json, nil
 }

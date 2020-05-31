@@ -1,10 +1,11 @@
 package database
 
 import (
+	"github.com/graph-gophers/graphql-go"
 	"github.com/komfy/api/internal/structs"
 )
 
-func GetEntityByID(id uint, eType string) (*structs.Entity, error) {
+func GetEntityByID(id graphql.ID, eType string) (*structs.Entity, error) {
 	entity := &structs.Entity{}
 	// SELECT * FROM entities WHERE entity_id = `id` LIMIT 1
 	gErr := openDatabase.Instance.Where("entity_id = ? AND type = ?", id, eType).First(entity).Error
@@ -20,7 +21,7 @@ func GetEntityByID(id uint, eType string) (*structs.Entity, error) {
 	return entity, nil
 }
 
-func GetAllEntitiesFromUser(uid uint, eType string) (*[]*structs.Entity, error) {
+func GetAllEntitiesFromUser(uid graphql.ID, eType string) (*[]*structs.Entity, error) {
 	entities := &[]*structs.Entity{}
 	// SELECT entities.* FROM entities JOIN users on entities.user_id = users.user_id WHERE entities.user_id = `uid` AND entities.type = `eType`
 	gErr := openDatabase.Instance.Joins("JOIN users on entities.user_id = users.user_id").Where("entities.user_id = ? AND entities.type = ?", uid, eType).Select("entities.*").Find(entities).Error
@@ -77,28 +78,13 @@ func GetLastNEntities(numOfEntities uint, eType string) (*[]*structs.Entity, err
 	return entities, nil
 }
 
-func GetRecursiveEntities(eid, depth, cDepth uint) (*[]*structs.Entity, error) {
-	currentDepthEntities := &[]*structs.Entity{}
+func GetEntitiesByAnswerOf(eid graphql.ID) ([]*structs.Entity, error) {
+	currentDepthEntities := []*structs.Entity{}
 
 	// SELECT * FROM entities WHERE answer_of=`eid`;
-	gErr := openDatabase.Instance.Where("answer_of = ?", eid).Find(currentDepthEntities).Error
+	gErr := openDatabase.Instance.Where("answer_of = ?", eid).Find(&currentDepthEntities).Error
 	if gErr != nil {
 		return nil, gErr
-	}
-
-	if len(*currentDepthEntities) > 0 && cDepth+1 < depth {
-		for _, child := range *currentDepthEntities {
-			tempEntitiesSlice, tErr := GetRecursiveEntities(child.ID, depth, cDepth+1)
-			if tErr != nil {
-				return nil, tErr
-			}
-
-			if len(*tempEntitiesSlice) == 0 {
-				continue
-			}
-
-			*currentDepthEntities = append(*currentDepthEntities, *tempEntitiesSlice...)
-		}
 	}
 
 	return currentDepthEntities, nil
