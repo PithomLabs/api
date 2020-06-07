@@ -5,18 +5,18 @@ schema{
 }
 
 type Query{
-	user: User
-	post: Post
-	comment: Comment
-	userInfo: UserInfo
+	user(UserID: Int!): User
+	post(PostID: Int!): Post
+	comment(CommentID:Int!): Comment
+	userInfo(UserID:Int!): UserInfo
 }
 
 type User{
 	settings: UserSettings
 	username: String!
-	createdAt: Int!
+	createdAt: String!
 	bio: String
-	id: ID!
+	id: Int!
 	avatarUrl: String!
 	posts: [Post]
 	fullname: String
@@ -30,30 +30,30 @@ type UserSettings{
 }
 
 type Post{
-	id: ID!
+	id: Int!
 	likes: Int!
-	liked: Boolean
+	#liked: Boolean
 	author: UserInfo!
 	inside: Content!
 	comments: [Comment]
-	createdAt: Int!
-	editedAt: Int
+	createdAt: String!
+	editedAt: String
 }
 
 type Comment{
-	id: ID!
+	id: Int!
 	likes: Int!
-	liked: Boolean
-	author: UserInfo!
+	#liked: Boolean
+	#author: UserInfo!
 	inside: Content!
 	comments: [Comment]
-	createdAt: Int!
-	editedAt: Int
+	createdAt: String!
+	editedAt: String
 }
 
 type UserInfo{
 	username: String!
-	id: ID!
+	id: Int!
 	nsfw: Boolean!
 	avatarUrl: String!
 }
@@ -83,13 +83,13 @@ enum ResourceType{
 }
 
 type Asset{
-	id: ID!
+	id: Int!
 	width: Int!
 	height: Int!
 	resourceType: ResourceType
 	url: String
 	secureUrl: String
-	createdAt: Int!
+	createdAt: String!
 	# TODO: Find out what it is 
 	# I don't know where i should take this field from 
 	# alt: String!

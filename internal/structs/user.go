@@ -1,10 +1,8 @@
 package structs
 
-import "github.com/graph-gophers/graphql-go"
-
 // User struct inside database
 type User struct {
-	ID       graphql.ID `gorm:"column:user_id;primary_key"`
+	ID       int64 `gorm:"column:user_id;primary_key"`
 	Username string
 	Password string
 	Email    string
@@ -20,9 +18,9 @@ type User struct {
 
 // Settings represent the user's account settings
 type Settings struct {
-	ID        uint       `gorm:"column:setting_id;primary_key"`
-	UserID    graphql.ID `gorm:"primary_key"`
-	ShowLikes bool       `gorm:"column:show_likes" json:"show_likes"`
-	ShowNSFW  bool       `gorm:"column:show_nsfw" json:"show_nsfw"`
-	NSFWPage  bool       `gorm:"column:nsfw_page" json:"nsfw_page"`
+	ID        uint  `gorm:"column:setting_id;primary_key"`
+	UserID    int64 `gorm:"primary_key"`
+	ShowLikes bool  `gorm:"column:show_likes" json:"show_likes"`
+	ShowNSFW  bool  `gorm:"column:show_nsfw" json:"show_nsfw"`
+	NSFWPage  bool  `gorm:"column:nsfw_page" json:"nsfw_page"`
 }

@@ -4,7 +4,7 @@ import "github.com/graph-gophers/graphql-go"
 
 // Entity struct represent the Posts and Comments
 type Entity struct {
-	ID     graphql.ID `gorm:"column:entity_id;primary_key"`
+	ID     int64 `gorm:"column:entity_id;primary_key"`
 	UserID uint
 	// This Type field correspond to the ENTITY_TYPE
 	Type      string  `gorm:"default:'post'"`
@@ -26,7 +26,7 @@ type Content struct {
 }
 
 type Asset struct {
-	ID           graphql.ID `gorm:"column:asset_id;primary_key"`
+	ID           int64 `gorm:"column:asset_id;primary_key"`
 	Width        uint
 	Height       uint
 	ResourceType string `gorm:"column:resource_type;default:'image'" json:"resource_type"`

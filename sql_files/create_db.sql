@@ -1,5 +1,6 @@
 -- Users table 
 -- PK: id
+
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY NOT NULL,
     username VARCHAR(32) NOT NULL UNIQUE,

@@ -1,13 +1,12 @@
 package mail
 
 import (
-	"github.com/graph-gophers/graphql-go"
 	"github.com/komfy/api/internal/database"
 	err "github.com/komfy/api/internal/error"
 )
 
-func Verify(code graphql.ID) error {
-	user, idErr := database.GetUserByID(string(code))
+func Verify(code int64) error {
+	user, idErr := database.GetUserByID(code)
 	if idErr != nil {
 		return err.ErrInDatabaseOccured
 	}
