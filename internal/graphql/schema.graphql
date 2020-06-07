@@ -1,0 +1,96 @@
+# test query
+
+schema{
+	query: Query
+}
+
+type Query{
+	user(UserID: Int!): User
+	post(PostID: Int!): Post
+	comment(CommentID:Int!): Comment
+	userInfo(UserID:Int!): UserInfo
+}
+
+type User{
+	settings: UserSettings
+	username: String!
+	createdAt: String!
+	bio: String
+	id: Int!
+	avatarUrl: String!
+	posts: [Post]
+	fullname: String
+	comments: [Comment]
+}
+
+type UserSettings{
+	showNsfw: Boolean!
+	showLikes: Boolean!
+	nsfwPage: Boolean!
+}
+
+type Post{
+	id: Int!
+	likes: Int!
+	#liked: Boolean
+	author: UserInfo!
+	inside: Content!
+	comments: [Comment]
+	createdAt: String!
+	editedAt: String
+}
+
+type Comment{
+	id: Int!
+	likes: Int!
+	#liked: Boolean
+	#author: UserInfo!
+	inside: Content!
+	comments: [Comment]
+	createdAt: String!
+	editedAt: String
+}
+
+type UserInfo{
+	username: String!
+	id: Int!
+	nsfw: Boolean!
+	avatarUrl: String!
+}
+
+type Content{
+	type: ContentType!
+	text: String!
+	nsfw: Boolean!
+	source: [Asset]
+}
+
+enum ContentType{
+	image
+	video
+	audio
+	text
+}
+
+"""
+Other stuff is in cloudinary response
+"""
+enum ResourceType{
+	image
+	video
+	raw
+	auto
+}
+
+type Asset{
+	id: Int!
+	width: Int!
+	height: Int!
+	resourceType: ResourceType
+	url: String
+	secureUrl: String
+	createdAt: String!
+	# TODO: Find out what it is 
+	# I don't know where i should take this field from 
+	# alt: String!
+}

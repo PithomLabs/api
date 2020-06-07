@@ -38,12 +38,13 @@ func DeleteUserHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	userInt, err := jwt.IsValid(token[0])
-	userID, err := strconv.Atoi(userInt.(map[string]string)["ID"])
+	userID := userInt.(map[string]string)["ID"]
+	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		http.Error(res, "couldn't convert an id to int", http.StatusBadGateway)
 		return
 	}
-	user, err := database.GetUserByID(uint(userID))
+	user, err := database.GetUserByID(int64(userIDInt))
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 		return

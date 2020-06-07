@@ -6,6 +6,7 @@ require (
 	github.com/dchest/captcha v0.0.0-20170622155422-6a29415a8364
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/graphiql v0.2.2
+	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
 	github.com/graphql-go/graphql v0.7.9
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0

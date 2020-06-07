@@ -5,7 +5,7 @@ import (
 	err "github.com/komfy/api/internal/error"
 )
 
-func Verify(code uint) error {
+func Verify(code int64) error {
 	user, idErr := database.GetUserByID(code)
 	if idErr != nil {
 		return err.ErrInDatabaseOccured
