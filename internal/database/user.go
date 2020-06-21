@@ -93,3 +93,20 @@ func UpdateCheck(user *structs.User) error {
 
 	return nil
 }
+func UpdateUser(user *structs.User) (*structs.User, error) {
+	inst := openDatabase.Instance.Model(user)
+	err := inst.Updates(user).Error
+	if err != nil {
+		return nil, err
+	}
+	err = openDatabase.Instance.Model(user).Related(&user.Settings).Updates(&user.Settings).Error
+	if err != nil {
+		return nil, err
+	}
+	err = openDatabase.Instance.Where("user_id = ?", user.ID).First(user).Error
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+
+}

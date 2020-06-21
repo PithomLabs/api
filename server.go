@@ -16,9 +16,9 @@ import (
 )
 
 var (
-  // Frontend var isn't initialized here because FRONTEND_URL
-  // isn't loaded at that time, at least when doing local development
-  frontendURL string
+	// Frontend var isn't initialized here because FRONTEND_URL
+	// isn't loaded at that time, at least when doing local development
+	frontendURL string
 )
 
 const (
@@ -72,12 +72,12 @@ func main() {
 			continue
 		}
 		fmt.Printf("  --> Environment variables were read from the file %s\n\n", envFile)
-    // If env file as been read, we put the FRONTEND_URL value inside the corresponding
-    // variable
-    frontendURL = os.Getenv("FRONTEND_URL")
+		// If env file as been read, we put the FRONTEND_URL value inside the corresponding
+		// variable
+		frontendURL = os.Getenv("FRONTEND_URL")
 		break
 	}
-  
+
 	if isDev && eErr != nil {
 		fmt.Println()
 		log.Fatal("No env files were able to be read, please create one following .env.example\n\n")
@@ -117,7 +117,7 @@ func main() {
 
 // mainHandler (was known as AddCORSOnLocal) handles everything
 func mainHandler(resp http.ResponseWriter, req *http.Request) {
-  netutils.EnableCORS(&resp, frontendURL)
+	netutils.EnableCORS(&resp, frontendURL)
 	// We suppress the '/' at the beginning of the path
 	path := req.URL.Path[1:]
 

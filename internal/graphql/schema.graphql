@@ -2,6 +2,7 @@
 
 schema{
 	query: Query
+	mutation: Mutation
 }
 
 type Query{
@@ -70,6 +71,26 @@ enum ContentType{
 	video
 	audio
 	text
+}
+
+#Mutation is starting here 
+type Mutation{
+        updateProfile(profile: ProfileInput!):User
+}
+
+input ProfileInput{
+        id: Int!
+        fullname: String
+        bio: String
+        avatarUrl: String
+        username: String
+        settings: SettingsInput 
+}
+
+input SettingsInput{
+	showNsfw: Boolean
+	showLikes: Boolean
+	nsfwPage: Boolean
 }
 
 """

@@ -4,7 +4,7 @@ services:
     api:
         build: 
             context: ./
-            dockerfile: ./Dockerfile
+            dockerfile: ./Dockerfile.dev
         links: 
             - postgres
         ports: 
@@ -19,5 +19,3 @@ services:
         restart: always
         volumes: 
             - ./postgres-volume:/var/lib/postgresql/data
-
-
